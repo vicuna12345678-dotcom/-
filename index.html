@@ -1,0 +1,980 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>创作者文案自查工具</title>
+<style>
+  /* ===== CSS 变量 ===== */
+  :root {
+    --bg: #f5f5f3;
+    --surface: #ffffff;
+    --surface-2: #f9f9f8;
+    --border: #e4e4e0;
+    --border-strong: #d0d0cb;
+    --text-primary: #1a1a18;
+    --text-secondary: #5a5a56;
+    --text-tertiary: #8a8a84;
+    --blue: #2563eb;
+    --blue-hover: #1d4ed8;
+    --blue-light: #eff6ff;
+    --orange: #ea580c;
+    --orange-light: #fff7ed;
+    --orange-border: #fed7aa;
+    --red: #dc2626;
+    --red-light: #fef2f2;
+    --red-border: #fecaca;
+    --green: #16a34a;
+    --green-light: #f0fdf4;
+    --green-border: #bbf7d0;
+    --yellow: #d97706;
+    --yellow-light: #fffbeb;
+    --yellow-border: #fde68a;
+    --radius: 10px;
+    --radius-sm: 6px;
+    --shadow: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
+    --shadow-md: 0 4px 12px rgba(0,0,0,0.08), 0 1px 3px rgba(0,0,0,0.04);
+    --font: 'PingFang SC', 'Microsoft YaHei', 'Hiragino Sans GB', sans-serif;
+    --font-mono: 'SF Mono', 'Fira Code', monospace;
+  }
+
+  /* ===== Reset ===== */
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: var(--font);
+    background: var(--bg);
+    color: var(--text-primary);
+    line-height: 1.6;
+    min-height: 100vh;
+    font-size: 15px;
+  }
+
+  /* ===== 布局 ===== */
+  .container {
+    max-width: 780px;
+    margin: 0 auto;
+    padding: 0 20px 60px;
+  }
+
+  /* ===== 顶部标题区 ===== */
+  .header {
+    padding: 48px 0 36px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 32px;
+  }
+
+  .header-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: var(--blue-light);
+    color: var(--blue);
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 0.5px;
+    padding: 4px 10px;
+    border-radius: 20px;
+    margin-bottom: 14px;
+  }
+
+  .header-badge::before {
+    content: '';
+    display: inline-block;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--blue);
+  }
+
+  h1 {
+    font-size: 26px;
+    font-weight: 700;
+    letter-spacing: -0.5px;
+    color: var(--text-primary);
+    margin-bottom: 10px;
+  }
+
+  .subtitle {
+    font-size: 14px;
+    color: var(--text-secondary);
+    line-height: 1.7;
+    max-width: 560px;
+  }
+
+  /* ===== 卡片 ===== */
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 24px;
+    box-shadow: var(--shadow);
+  }
+
+  .card + .card {
+    margin-top: 16px;
+  }
+
+  /* ===== 输入区 ===== */
+  .input-section {
+    margin-bottom: 16px;
+  }
+
+  .input-label {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+  }
+
+  .input-label-text {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-secondary);
+    letter-spacing: 0.3px;
+    text-transform: uppercase;
+  }
+
+  .char-count {
+    font-size: 12px;
+    color: var(--text-tertiary);
+    font-variant-numeric: tabular-nums;
+  }
+
+  input[type="text"], textarea {
+    width: 100%;
+    border: 1px solid var(--border-strong);
+    border-radius: var(--radius-sm);
+    padding: 11px 14px;
+    font-family: var(--font);
+    font-size: 14.5px;
+    color: var(--text-primary);
+    background: var(--surface-2);
+    transition: border-color 0.15s, box-shadow 0.15s, background 0.15s;
+    outline: none;
+    resize: vertical;
+  }
+
+  input[type="text"]:focus, textarea:focus {
+    border-color: var(--blue);
+    background: var(--surface);
+    box-shadow: 0 0 0 3px rgba(37,99,235,0.1);
+  }
+
+  input[type="text"] {
+    height: 42px;
+  }
+
+  textarea {
+    height: 140px;
+    min-height: 100px;
+    line-height: 1.7;
+  }
+
+  /* ===== 按钮区 ===== */
+  .btn-group {
+    display: flex;
+    gap: 10px;
+    margin-top: 20px;
+    flex-wrap: wrap;
+  }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 9px 18px;
+    border-radius: var(--radius-sm);
+    font-family: var(--font);
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    border: 1px solid transparent;
+    transition: all 0.15s;
+    white-space: nowrap;
+  }
+
+  .btn-primary {
+    background: var(--blue);
+    color: #fff;
+  }
+
+  .btn-primary:hover {
+    background: var(--blue-hover);
+    box-shadow: 0 2px 8px rgba(37,99,235,0.25);
+    transform: translateY(-1px);
+  }
+
+  .btn-primary:active {
+    transform: translateY(0);
+  }
+
+  .btn-ghost {
+    background: var(--surface);
+    color: var(--text-secondary);
+    border-color: var(--border-strong);
+  }
+
+  .btn-ghost:hover {
+    background: var(--surface-2);
+    color: var(--text-primary);
+    border-color: var(--border-strong);
+  }
+
+  /* ===== 提示消息 ===== */
+  .toast {
+    display: none;
+    align-items: center;
+    gap: 8px;
+    margin-top: 12px;
+    padding: 10px 14px;
+    background: var(--yellow-light);
+    border: 1px solid var(--yellow-border);
+    border-radius: var(--radius-sm);
+    font-size: 13.5px;
+    color: var(--yellow);
+  }
+
+  .toast.show {
+    display: flex;
+  }
+
+  /* ===== 分割线 ===== */
+  .divider {
+    height: 1px;
+    background: var(--border);
+    margin: 28px 0;
+  }
+
+  /* ===== 结果区 ===== */
+  #result-section {
+    display: none;
+  }
+
+  #result-section.show {
+    display: block;
+  }
+
+  .result-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 16px;
+  }
+
+  .result-title {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--text-primary);
+  }
+
+  /* ===== 总览卡片 ===== */
+  .overview-card {
+    border-radius: var(--radius);
+    padding: 22px 24px;
+    margin-bottom: 16px;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    box-shadow: var(--shadow);
+  }
+
+  .overview-top {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 16px;
+  }
+
+  .overview-stats {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .overview-main {
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--text-primary);
+    letter-spacing: -0.5px;
+  }
+
+  .overview-sub {
+    font-size: 13.5px;
+    color: var(--text-secondary);
+    margin-top: 2px;
+  }
+
+  .level-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 16px;
+    border-radius: 24px;
+    font-size: 14px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+  }
+
+  .level-badge::before {
+    content: '';
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: currentColor;
+    opacity: 0.8;
+  }
+
+  .level-low {
+    background: var(--green-light);
+    color: var(--green);
+    border: 1px solid var(--green-border);
+  }
+
+  .level-mid {
+    background: var(--yellow-light);
+    color: var(--yellow);
+    border: 1px solid var(--yellow-border);
+  }
+
+  .level-high {
+    background: var(--red-light);
+    color: var(--red);
+    border: 1px solid var(--red-border);
+  }
+
+  /* 无问题时的空状态 */
+  .empty-state {
+    text-align: center;
+    padding: 36px 24px;
+  }
+
+  .empty-icon {
+    font-size: 36px;
+    margin-bottom: 12px;
+  }
+
+  .empty-title {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--green);
+    margin-bottom: 6px;
+  }
+
+  .empty-desc {
+    font-size: 13.5px;
+    color: var(--text-tertiary);
+  }
+
+  /* ===== 问题列表 ===== */
+  .issue-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .issue-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+    box-shadow: var(--shadow);
+    transition: box-shadow 0.15s;
+  }
+
+  .issue-card:hover {
+    box-shadow: var(--shadow-md);
+  }
+
+  .issue-card-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 13px 18px;
+    border-bottom: 1px solid var(--border);
+    background: var(--surface-2);
+  }
+
+  .issue-index {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-tertiary);
+    font-variant-numeric: tabular-nums;
+    min-width: 28px;
+  }
+
+  .issue-category {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-primary);
+    flex: 1;
+  }
+
+  .severity-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 11.5px;
+    font-weight: 600;
+    padding: 3px 9px;
+    border-radius: 12px;
+    letter-spacing: 0.3px;
+  }
+
+  .severity-tag::before {
+    content: '●';
+    font-size: 8px;
+  }
+
+  .severity-high {
+    background: var(--red-light);
+    color: var(--red);
+    border: 1px solid var(--red-border);
+  }
+
+  .severity-medium {
+    background: var(--orange-light);
+    color: var(--orange);
+    border: 1px solid var(--orange-border);
+  }
+
+  .issue-card-body {
+    padding: 16px 18px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  /* 原句展示 */
+  .issue-sentence-block {
+    background: var(--surface-2);
+    border-left: 3px solid var(--border-strong);
+    padding: 10px 14px;
+    border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+    font-size: 14px;
+    line-height: 1.75;
+    color: var(--text-primary);
+  }
+
+  .issue-sentence-block mark {
+    background: #fef08a;
+    color: var(--text-primary);
+    border-radius: 2px;
+    padding: 1px 2px;
+    font-weight: 600;
+  }
+
+  /* 字段行 */
+  .issue-field {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+  }
+
+  .issue-field-label {
+    font-size: 11.5px;
+    font-weight: 600;
+    color: var(--text-tertiary);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .issue-field-value {
+    font-size: 13.5px;
+    color: var(--text-secondary);
+    line-height: 1.65;
+  }
+
+  /* 改写建议 */
+  .suggestions-list {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .suggestion-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    font-size: 13.5px;
+    color: var(--text-secondary);
+    line-height: 1.6;
+  }
+
+  .suggestion-dot {
+    flex-shrink: 0;
+    margin-top: 5px;
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: var(--blue);
+    opacity: 0.6;
+  }
+
+  /* ===== 页脚 ===== */
+  .footer {
+    margin-top: 48px;
+    padding-top: 24px;
+    border-top: 1px solid var(--border);
+  }
+
+  .footer-title {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-tertiary);
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    margin-bottom: 10px;
+  }
+
+  .footer-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .footer-list li {
+    font-size: 12.5px;
+    color: var(--text-tertiary);
+    display: flex;
+    align-items: flex-start;
+    gap: 7px;
+    line-height: 1.5;
+  }
+
+  .footer-list li::before {
+    content: '·';
+    flex-shrink: 0;
+    color: var(--text-tertiary);
+  }
+
+  /* ===== 响应式 ===== */
+  @media (max-width: 600px) {
+    .container { padding: 0 14px 48px; }
+    .header { padding: 32px 0 24px; }
+    h1 { font-size: 22px; }
+    .card { padding: 18px; }
+    .overview-card { padding: 18px; }
+    .overview-main { font-size: 18px; }
+    .btn-group { flex-direction: column; }
+    .btn { justify-content: center; }
+    .issue-card-header { flex-wrap: wrap; }
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+
+  <!-- ===== 顶部标题区 ===== -->
+  <header class="header">
+    <div class="header-badge">本地运行 · 不上传内容</div>
+    <h1>创作者文案自查工具</h1>
+    <p class="subtitle">本工具仅在本地浏览器运行，不上传任何内容，用于发布前的表达自查与改写建议。</p>
+  </header>
+
+  <!-- ===== 输入区 ===== -->
+  <div class="card">
+    <div class="input-section">
+      <div class="input-label">
+        <span class="input-label-text">标题</span>
+        <span class="char-count" id="title-count">0 字</span>
+      </div>
+      <input type="text" id="title-input" placeholder="输入文案标题（选填）">
+    </div>
+
+    <div class="input-section">
+      <div class="input-label">
+        <span class="input-label-text">正文</span>
+        <span class="char-count" id="body-count">0 字</span>
+      </div>
+      <textarea id="body-input" placeholder="输入正文内容（选填，但标题和正文不能同时为空）"></textarea>
+    </div>
+
+    <!-- 提示消息 -->
+    <div class="toast" id="empty-toast">
+      ⚠ 请先在标题或正文中输入内容，再开始自查。
+    </div>
+
+    <div class="btn-group">
+      <button class="btn btn-primary" id="btn-check">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+        开始自查
+      </button>
+      <button class="btn btn-ghost" id="btn-clear">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6"/></svg>
+        清空内容
+      </button>
+      <button class="btn btn-ghost" id="btn-example">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+        加载示例
+      </button>
+    </div>
+  </div>
+
+  <!-- ===== 结果区 ===== -->
+  <div id="result-section">
+    <div class="divider"></div>
+
+    <div class="result-header">
+      <span class="result-title">自查结果</span>
+    </div>
+
+    <!-- 总览卡片 -->
+    <div class="overview-card" id="overview-card">
+      <!-- 由 JS 动态填充 -->
+    </div>
+
+    <!-- 问题列表 -->
+    <div class="issue-list" id="issue-list">
+      <!-- 由 JS 动态填充 -->
+    </div>
+  </div>
+
+  <!-- ===== 页脚 ===== -->
+  <footer class="footer">
+    <div class="footer-title">使用说明</div>
+    <ul class="footer-list">
+      <li>本工具不代表任何平台的审核结果，不预测账号状态或内容流量。</li>
+      <li>仅用于创作者发布前的本地表达自查与语言优化参考。</li>
+      <li>涉及医疗、金融、法律等专业领域的内容，需结合人工复核判断。</li>
+    </ul>
+  </footer>
+
+</div><!-- /container -->
+
+<script>
+// ============================================================
+// rules.js — 内联规则数据
+// 每条规则字段说明：
+//   id          唯一标识
+//   category    类别名称
+//   severity    风险等级：high | medium
+//   keywords    触发词数组（字符串匹配）
+//   message     风险说明
+//   suggestions 改写建议（2-4条）
+// ============================================================
+const RULES = [
+
+  // ── 1. 绝对化表达 ──────────────────────────────────────
+  {
+    id: 'abs-001',
+    category: '绝对化表达',
+    severity: 'high',
+    keywords: ['最好', '最佳', '最强', '最顶', '最优', '最牛', '最火', '第一', '唯一', '绝对', '100%', '百分之百', '永久', '永远有效', '终极', '顶级', '无与伦比', '史上最'],
+    message: '含有绝对化用词，可能使读者产生过高预期，或引发对内容真实性的质疑。',
+    suggestions: [
+      '将"最"替换为"之一"，如"效果较好的方法之一"',
+      '加入限定语，说明适用范围或个人体验，如"我用下来感觉是……"',
+      '用具体数据或场景描述代替笼统的极值表达',
+      '换为比较级表达，如"比以前好用很多"',
+    ]
+  },
+
+  // ── 2. 过度承诺 ──────────────────────────────────────
+  {
+    id: 'pro-001',
+    category: '过度承诺',
+    severity: 'high',
+    keywords: ['保证有效', '一定有效', '立刻见效', '马上见效', '一定成功', '完全解决', '彻底解决', '包会', '稳过', '绝对可以', '肯定能', '百分百成功', '保证好用', '保证瘦', '包治', '无效退款'],
+    message: '承诺性表达过强，读者可能将其视为绝对结论，若效果不一，易引发信任问题。',
+    suggestions: [
+      '改为分享个人经验，如"我自己用了之后感觉……"',
+      '加入客观限定，如"因人而异，我的体验是……"',
+      '替换为"值得一试"或"对我来说效果不错"',
+      '说明前提条件，让建议更有参考价值',
+    ]
+  },
+
+  // ── 3. 过激语气 ──────────────────────────────────────
+  {
+    id: 'emo-001',
+    category: '过激语气',
+    severity: 'medium',
+    keywords: ['恶心', '离谱死了', '气炸了', '气死了', '必须骂', '垃圾', '无语透了', '笑死', '蠢透了', '太蠢了', '傻透了', '丑爆了', '烂透了', '臭不要脸', '令人作呕', '脑子有问题', '智障', '疯了吧'],
+    message: '语气较为激烈，可能使部分读者感到不适，或影响内容整体的专业感与亲和力。',
+    suggestions: [
+      '将情绪表达转化为具体描述，说明让你有这种感受的原因',
+      '用"有点失望""感觉不太对"等平和措辞替代激烈词语',
+      '保留情绪的同时加入理性分析，增强说服力',
+      '如确需强调，可改为"说真的，这一点确实让我难以接受"',
+    ]
+  },
+
+  // ── 4. 对立化表述 ──────────────────────────────────────
+  {
+    id: 'opp-001',
+    category: '对立化表述',
+    severity: 'high',
+    keywords: ['男的都', '女的都', '男人都是', '女人都是', '这类人就是', '某类人全都', '他们全都', '这群人', '这种人都', '直男都', '直女都', '有钱人都', '穷人都', '老人都', '年轻人都', '打工人都'],
+    message: '对某类群体进行笼统概括，可能引发该群体读者反感，或被认为带有偏见。',
+    suggestions: [
+      '改为个人经验表述，如"我身边有些人会……"',
+      '加入"部分""有时候"等限定词，避免一刀切',
+      '聚焦具体行为而非群体，如"这种做法让我觉得……"',
+      '以提问方式替代断言，引发读者自我思考',
+    ]
+  },
+
+  // ── 5. 过强营销感 ──────────────────────────────────────
+  {
+    id: 'mkt-001',
+    category: '过强营销感',
+    severity: 'medium',
+    keywords: ['闭眼冲', '错过血亏', '赶紧买', '人人必备', '冲就完了', '无脑入', '无脑买', '必须囤', '赶快抢', '限时', '秒杀', '不买后悔', '买到就是赚到', '性价比无敌', '全网最低', '不入亏大了'],
+    message: '营销感较强的表达，读者可能对此类措辞产生免疫或抵触，影响内容信任度。',
+    suggestions: [
+      '改为真实使用感受分享，淡化购买引导',
+      '说明"为什么我会推荐"，而非直接催促行动',
+      '去掉催促性词汇，改为"如果你也有类似需求，可以参考"',
+      '以问题导入，引导读者自己判断是否适合',
+    ]
+  },
+
+  // ── 6. 结论过满 ──────────────────────────────────────
+  {
+    id: 'con-001',
+    category: '结论过满',
+    severity: 'medium',
+    keywords: ['这就是事实', '毫无疑问', '根本不用怀疑', '一定是这样', '肯定如此', '没有例外', '所有人都知道', '显而易见', '不可能有别的原因', '就是这个原因', '无可辩驳', '这是公认的', '绝无可能'],
+    message: '结论表述过于绝对，缺乏余地，读者可能对此产生质疑或反驳欲望。',
+    suggestions: [
+      '将断言改为观点，如"我认为……""在我看来……"',
+      '加入"大多数情况下""就我的经验来说"等限定语',
+      '为结论补充依据，使其更有说服力而非单纯武断',
+      '留有余地，如"当然，也不排除其他可能性"',
+    ]
+  },
+
+]; // end RULES
+
+
+// ============================================================
+// app.js — 内联应用逻辑
+// ============================================================
+
+// ── DOM 引用 ──────────────────────────────────────────────
+const titleInput   = document.getElementById('title-input');
+const bodyInput    = document.getElementById('body-input');
+const titleCount   = document.getElementById('title-count');
+const bodyCount    = document.getElementById('body-count');
+const btnCheck     = document.getElementById('btn-check');
+const btnClear     = document.getElementById('btn-clear');
+const btnExample   = document.getElementById('btn-example');
+const emptyToast   = document.getElementById('empty-toast');
+const resultSection = document.getElementById('result-section');
+const overviewCard = document.getElementById('overview-card');
+const issueList    = document.getElementById('issue-list');
+
+// ── 示例文案 ──────────────────────────────────────────────
+const EXAMPLE_TITLE = '史上最强减脂方法，100%有效，第一次见这么好的方案！';
+const EXAMPLE_BODY  = `这绝对是我用过的最好的减脂方案，保证有效，稳过所有瓶颈期！
+女的都喜欢麻烦自己，其实根本不用怀疑，答案就这一个。
+恶心死了那些靠节食减肥的人，离谱死了，这就是事实。
+闭眼冲，错过血亏，人人必备，赶紧买！
+毫无疑问，这是公认的最佳选择，所有人都知道这一点。`;
+
+// ── 字数统计（实时）─────────────────────────────────────
+titleInput.addEventListener('input', () => {
+  titleCount.textContent = titleInput.value.length + ' 字';
+});
+
+bodyInput.addEventListener('input', () => {
+  bodyCount.textContent = bodyInput.value.length + ' 字';
+});
+
+// ── 分句函数 ──────────────────────────────────────────────
+// 按中英文标点和换行切割，过滤空句
+function splitSentences(text) {
+  // 切割符：句号、问号、感叹号、分号、换行（含多个空白）
+  const parts = text.split(/[。！？；!?;\n]+/);
+  return parts
+    .map(s => s.trim())
+    .filter(s => s.length > 0);
+}
+
+// ── 高亮函数 ──────────────────────────────────────────────
+// 在句子中高亮命中词（支持多个词高亮）
+function highlightKeyword(sentence, keyword) {
+  // 转义正则特殊字符
+  const escaped = keyword.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  const re = new RegExp(escaped, 'g');
+  return sentence.replace(re, `<mark>${keyword}</mark>`);
+}
+
+// ── 核心检测函数 ──────────────────────────────────────────
+function runCheck(titleText, bodyText) {
+  const fullText = [titleText, bodyText].filter(Boolean).join('\n');
+  const sentences = splitSentences(fullText);
+  const results = [];
+
+  // 逐句 × 逐规则 × 逐关键词 匹配
+  sentences.forEach(sentence => {
+    RULES.forEach(rule => {
+      rule.keywords.forEach(keyword => {
+        if (sentence.includes(keyword)) {
+          // 同一句话 + 同一关键词只记录一次
+          const alreadyLogged = results.some(
+            r => r.sentence === sentence && r.matchedKeyword === keyword
+          );
+          if (!alreadyLogged) {
+            results.push({
+              sentence,
+              matchedKeyword: keyword,
+              category: rule.category,
+              severity: rule.severity,
+              message: rule.message,
+              suggestions: rule.suggestions,
+            });
+          }
+        }
+      });
+    });
+  });
+
+  return results;
+}
+
+// ── 计算提示等级 ──────────────────────────────────────────
+// 低：0 条；或 ≤2 条且无 high
+// 中：有 high 或 total 3-4 条
+// 高：high ≥ 3 条 或 total ≥ 5 条
+function calcLevel(results) {
+  const total = results.length;
+  const highCount = results.filter(r => r.severity === 'high').length;
+
+  if (total === 0) return 'low';
+  if (highCount >= 3 || total >= 5) return 'high';
+  if (highCount >= 1 || total >= 3) return 'mid';
+  return 'low';
+}
+
+// ── 渲染总览卡片 ──────────────────────────────────────────
+function renderOverview(results) {
+  const total = results.length;
+  const highCount = results.filter(r => r.severity === 'high').length;
+  const level = calcLevel(results);
+
+  const levelMap = {
+    low:  { label: '提示等级：低', cls: 'level-low' },
+    mid:  { label: '提示等级：中', cls: 'level-mid' },
+    high: { label: '提示等级：高', cls: 'level-high' },
+  };
+  const lv = levelMap[level];
+
+  if (total === 0) {
+    overviewCard.innerHTML = `
+      <div class="empty-state">
+        <div class="empty-icon">✓</div>
+        <div class="empty-title">未发现明显值得调整的表达</div>
+        <div class="empty-desc">当前文案整体表达较为平稳，仍建议结合实际情况人工复核。</div>
+      </div>`;
+  } else {
+    overviewCard.innerHTML = `
+      <div class="overview-top">
+        <div class="overview-stats">
+          <div class="overview-main">共发现 ${total} 处值得调整的表达</div>
+          <div class="overview-sub">其中 ${highCount} 处为较高风险提示，建议优先修改</div>
+        </div>
+        <div class="level-badge ${lv.cls}">${lv.label}</div>
+      </div>`;
+  }
+}
+
+// ── 渲染问题列表 ──────────────────────────────────────────
+function renderIssues(results) {
+  issueList.innerHTML = '';
+
+  if (results.length === 0) return;
+
+  results.forEach((r, i) => {
+    const severityLabel = r.severity === 'high' ? '较高风险提示' : '中等风险提示';
+    const severityCls   = r.severity === 'high' ? 'severity-high' : 'severity-medium';
+    const highlighted   = highlightKeyword(r.sentence, r.matchedKeyword);
+
+    const suggestionsHTML = r.suggestions
+      .map(s => `<div class="suggestion-item"><div class="suggestion-dot"></div><div>${s}</div></div>`)
+      .join('');
+
+    const card = document.createElement('div');
+    card.className = 'issue-card';
+    card.innerHTML = `
+      <div class="issue-card-header">
+        <span class="issue-index">#${String(i + 1).padStart(2, '0')}</span>
+        <span class="issue-category">${r.category}</span>
+        <span class="severity-tag ${severityCls}">${severityLabel}</span>
+      </div>
+      <div class="issue-card-body">
+        <div>
+          <div class="issue-field-label" style="margin-bottom:6px;">原句（命中词已高亮）</div>
+          <div class="issue-sentence-block">${highlighted}</div>
+        </div>
+        <div class="issue-field">
+          <div class="issue-field-label">风险说明</div>
+          <div class="issue-field-value">${r.message}</div>
+        </div>
+        <div class="issue-field">
+          <div class="issue-field-label">改写建议</div>
+          <div class="suggestions-list">${suggestionsHTML}</div>
+        </div>
+      </div>`;
+    issueList.appendChild(card);
+  });
+}
+
+// ── 按钮事件：开始自查 ────────────────────────────────────
+btnCheck.addEventListener('click', () => {
+  const title = titleInput.value.trim();
+  const body  = bodyInput.value.trim();
+
+  // 空内容校验
+  if (!title && !body) {
+    emptyToast.classList.add('show');
+    setTimeout(() => emptyToast.classList.remove('show'), 3000);
+    return;
+  }
+
+  emptyToast.classList.remove('show');
+
+  // 执行检测
+  const results = runCheck(title, body);
+
+  // 渲染结果
+  renderOverview(results);
+  renderIssues(results);
+
+  // 显示结果区
+  resultSection.classList.add('show');
+
+  // 滚动到结果区
+  setTimeout(() => {
+    resultSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }, 50);
+});
+
+// ── 按钮事件：清空内容 ────────────────────────────────────
+btnClear.addEventListener('click', () => {
+  titleInput.value = '';
+  bodyInput.value  = '';
+  titleCount.textContent = '0 字';
+  bodyCount.textContent  = '0 字';
+  emptyToast.classList.remove('show');
+  resultSection.classList.remove('show');
+  overviewCard.innerHTML = '';
+  issueList.innerHTML    = '';
+});
+
+// ── 按钮事件：加载示例 ────────────────────────────────────
+btnExample.addEventListener('click', () => {
+  titleInput.value = EXAMPLE_TITLE;
+  bodyInput.value  = EXAMPLE_BODY;
+  titleCount.textContent = EXAMPLE_TITLE.length + ' 字';
+  bodyCount.textContent  = EXAMPLE_BODY.length  + ' 字';
+  emptyToast.classList.remove('show');
+  // 隐藏旧结果（如有）
+  resultSection.classList.remove('show');
+});
+</script>
+</body>
+</html>
