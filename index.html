@@ -5,976 +5,1079 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>创作者文案自查工具</title>
 <style>
-  /* ===== CSS 变量 ===== */
-  :root {
-    --bg: #f5f5f3;
-    --surface: #ffffff;
-    --surface-2: #f9f9f8;
-    --border: #e4e4e0;
-    --border-strong: #d0d0cb;
-    --text-primary: #1a1a18;
-    --text-secondary: #5a5a56;
-    --text-tertiary: #8a8a84;
-    --blue: #2563eb;
-    --blue-hover: #1d4ed8;
-    --blue-light: #eff6ff;
-    --orange: #ea580c;
-    --orange-light: #fff7ed;
-    --orange-border: #fed7aa;
-    --red: #dc2626;
-    --red-light: #fef2f2;
-    --red-border: #fecaca;
-    --green: #16a34a;
-    --green-light: #f0fdf4;
-    --green-border: #bbf7d0;
-    --yellow: #d97706;
-    --yellow-light: #fffbeb;
-    --yellow-border: #fde68a;
-    --radius: 10px;
-    --radius-sm: 6px;
-    --shadow: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
-    --shadow-md: 0 4px 12px rgba(0,0,0,0.08), 0 1px 3px rgba(0,0,0,0.04);
-    --font: 'PingFang SC', 'Microsoft YaHei', 'Hiragino Sans GB', sans-serif;
-    --font-mono: 'SF Mono', 'Fira Code', monospace;
-  }
-
-  /* ===== Reset ===== */
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-  body {
-    font-family: var(--font);
-    background: var(--bg);
-    color: var(--text-primary);
-    line-height: 1.6;
-    min-height: 100vh;
-    font-size: 15px;
-  }
-
-  /* ===== 布局 ===== */
-  .container {
-    max-width: 780px;
-    margin: 0 auto;
-    padding: 0 20px 60px;
-  }
-
-  /* ===== 顶部标题区 ===== */
-  .header {
-    padding: 48px 0 36px;
-    border-bottom: 1px solid var(--border);
-    margin-bottom: 32px;
-  }
-
-  .header-badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    background: var(--blue-light);
-    color: var(--blue);
-    font-size: 12px;
-    font-weight: 500;
-    letter-spacing: 0.5px;
-    padding: 4px 10px;
-    border-radius: 20px;
-    margin-bottom: 14px;
-  }
-
-  .header-badge::before {
-    content: '';
-    display: inline-block;
-    width: 6px;
-    height: 6px;
-    border-radius: 50%;
-    background: var(--blue);
-  }
-
-  h1 {
-    font-size: 26px;
-    font-weight: 700;
-    letter-spacing: -0.5px;
-    color: var(--text-primary);
-    margin-bottom: 10px;
-  }
-
-  .subtitle {
-    font-size: 14px;
-    color: var(--text-secondary);
-    line-height: 1.7;
-    max-width: 560px;
-  }
-
-  /* ===== 卡片 ===== */
-  .card {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    padding: 24px;
-    box-shadow: var(--shadow);
-  }
-
-  .card + .card {
-    margin-top: 16px;
-  }
-
-  /* ===== 输入区 ===== */
-  .input-section {
-    margin-bottom: 16px;
-  }
-
-  .input-label {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 8px;
-  }
-
-  .input-label-text {
-    font-size: 13px;
-    font-weight: 600;
-    color: var(--text-secondary);
-    letter-spacing: 0.3px;
-    text-transform: uppercase;
-  }
-
-  .char-count {
-    font-size: 12px;
-    color: var(--text-tertiary);
-    font-variant-numeric: tabular-nums;
-  }
-
-  input[type="text"], textarea {
-    width: 100%;
-    border: 1px solid var(--border-strong);
-    border-radius: var(--radius-sm);
-    padding: 11px 14px;
-    font-family: var(--font);
-    font-size: 14.5px;
-    color: var(--text-primary);
-    background: var(--surface-2);
-    transition: border-color 0.15s, box-shadow 0.15s, background 0.15s;
-    outline: none;
-    resize: vertical;
-  }
-
-  input[type="text"]:focus, textarea:focus {
-    border-color: var(--blue);
-    background: var(--surface);
-    box-shadow: 0 0 0 3px rgba(37,99,235,0.1);
-  }
-
-  input[type="text"] {
-    height: 42px;
-  }
-
-  textarea {
-    height: 140px;
-    min-height: 100px;
-    line-height: 1.7;
-  }
-
-  /* ===== 按钮区 ===== */
-  .btn-group {
-    display: flex;
-    gap: 10px;
-    margin-top: 20px;
-    flex-wrap: wrap;
-  }
-
-  .btn {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    padding: 9px 18px;
-    border-radius: var(--radius-sm);
-    font-family: var(--font);
-    font-size: 14px;
-    font-weight: 500;
-    cursor: pointer;
-    border: 1px solid transparent;
-    transition: all 0.15s;
-    white-space: nowrap;
-  }
-
-  .btn-primary {
-    background: var(--blue);
-    color: #fff;
-  }
-
-  .btn-primary:hover {
-    background: var(--blue-hover);
-    box-shadow: 0 2px 8px rgba(37,99,235,0.25);
-    transform: translateY(-1px);
-  }
-
-  .btn-primary:active {
-    transform: translateY(0);
-  }
-
-  .btn-ghost {
-    background: var(--surface);
-    color: var(--text-secondary);
-    border-color: var(--border-strong);
-  }
-
-  .btn-ghost:hover {
-    background: var(--surface-2);
-    color: var(--text-primary);
-    border-color: var(--border-strong);
-  }
-
-  /* ===== 提示消息 ===== */
-  .toast {
-    display: none;
-    align-items: center;
-    gap: 8px;
-    margin-top: 12px;
-    padding: 10px 14px;
-    background: var(--yellow-light);
-    border: 1px solid var(--yellow-border);
-    border-radius: var(--radius-sm);
-    font-size: 13.5px;
-    color: var(--yellow);
-  }
-
-  .toast.show {
-    display: flex;
-  }
-
-  /* ===== 分割线 ===== */
-  .divider {
-    height: 1px;
-    background: var(--border);
-    margin: 28px 0;
-  }
-
-  /* ===== 结果区 ===== */
-  #result-section {
-    display: none;
-  }
-
-  #result-section.show {
-    display: block;
-  }
-
-  .result-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 16px;
-  }
-
-  .result-title {
-    font-size: 16px;
-    font-weight: 700;
-    color: var(--text-primary);
-  }
-
-  /* ===== 总览卡片 ===== */
-  .overview-card {
-    border-radius: var(--radius);
-    padding: 22px 24px;
-    margin-bottom: 16px;
-    border: 1px solid var(--border);
-    background: var(--surface);
-    box-shadow: var(--shadow);
-  }
-
-  .overview-top {
-    display: flex;
-    align-items: flex-start;
-    justify-content: space-between;
-    flex-wrap: wrap;
-    gap: 16px;
-  }
-
-  .overview-stats {
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-  }
-
-  .overview-main {
-    font-size: 22px;
-    font-weight: 700;
-    color: var(--text-primary);
-    letter-spacing: -0.5px;
-  }
-
-  .overview-sub {
-    font-size: 13.5px;
-    color: var(--text-secondary);
-    margin-top: 2px;
-  }
-
-  .level-badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    padding: 8px 16px;
-    border-radius: 24px;
-    font-size: 14px;
-    font-weight: 600;
-    letter-spacing: 0.5px;
-  }
-
-  .level-badge::before {
-    content: '';
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
-    background: currentColor;
-    opacity: 0.8;
-  }
-
-  .level-low {
-    background: var(--green-light);
-    color: var(--green);
-    border: 1px solid var(--green-border);
-  }
-
-  .level-mid {
-    background: var(--yellow-light);
-    color: var(--yellow);
-    border: 1px solid var(--yellow-border);
-  }
-
-  .level-high {
-    background: var(--red-light);
-    color: var(--red);
-    border: 1px solid var(--red-border);
-  }
-
-  /* 无问题时的空状态 */
-  .empty-state {
-    text-align: center;
-    padding: 36px 24px;
-  }
-
-  .empty-icon {
-    font-size: 36px;
-    margin-bottom: 12px;
-  }
-
-  .empty-title {
-    font-size: 16px;
-    font-weight: 600;
-    color: var(--green);
-    margin-bottom: 6px;
-  }
-
-  .empty-desc {
-    font-size: 13.5px;
-    color: var(--text-tertiary);
-  }
-
-  /* ===== 问题列表 ===== */
-  .issue-list {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-  }
-
-  .issue-card {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    overflow: hidden;
-    box-shadow: var(--shadow);
-    transition: box-shadow 0.15s;
-  }
-
-  .issue-card:hover {
-    box-shadow: var(--shadow-md);
-  }
-
-  .issue-card-header {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 13px 18px;
-    border-bottom: 1px solid var(--border);
-    background: var(--surface-2);
-  }
-
-  .issue-index {
-    font-size: 12px;
-    font-weight: 600;
-    color: var(--text-tertiary);
-    font-variant-numeric: tabular-nums;
-    min-width: 28px;
-  }
-
-  .issue-category {
-    font-size: 13px;
-    font-weight: 600;
-    color: var(--text-primary);
-    flex: 1;
-  }
-
-  .severity-tag {
-    display: inline-flex;
-    align-items: center;
-    gap: 4px;
-    font-size: 11.5px;
-    font-weight: 600;
-    padding: 3px 9px;
-    border-radius: 12px;
-    letter-spacing: 0.3px;
-  }
-
-  .severity-tag::before {
-    content: '●';
-    font-size: 8px;
-  }
-
-  .severity-high {
-    background: var(--red-light);
-    color: var(--red);
-    border: 1px solid var(--red-border);
-  }
-
-  .severity-medium {
-    background: var(--orange-light);
-    color: var(--orange);
-    border: 1px solid var(--orange-border);
-  }
-
-  .issue-card-body {
-    padding: 16px 18px;
-    display: flex;
-    flex-direction: column;
-    gap: 14px;
-  }
-
-  /* 原句展示 */
-  .issue-sentence-block {
-    background: var(--surface-2);
-    border-left: 3px solid var(--border-strong);
-    padding: 10px 14px;
-    border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
-    font-size: 14px;
-    line-height: 1.75;
-    color: var(--text-primary);
-  }
-
-  .issue-sentence-block mark {
-    background: #fef08a;
-    color: var(--text-primary);
-    border-radius: 2px;
-    padding: 1px 2px;
-    font-weight: 600;
-  }
-
-  /* 字段行 */
-  .issue-field {
-    display: flex;
-    flex-direction: column;
-    gap: 5px;
-  }
-
-  .issue-field-label {
-    font-size: 11.5px;
-    font-weight: 600;
-    color: var(--text-tertiary);
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-  }
-
-  .issue-field-value {
-    font-size: 13.5px;
-    color: var(--text-secondary);
-    line-height: 1.65;
-  }
-
-  /* 改写建议 */
-  .suggestions-list {
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-  }
-
-  .suggestion-item {
-    display: flex;
-    align-items: flex-start;
-    gap: 8px;
-    font-size: 13.5px;
-    color: var(--text-secondary);
-    line-height: 1.6;
-  }
-
-  .suggestion-dot {
-    flex-shrink: 0;
-    margin-top: 5px;
-    width: 5px;
-    height: 5px;
-    border-radius: 50%;
-    background: var(--blue);
-    opacity: 0.6;
-  }
-
-  /* ===== 页脚 ===== */
-  .footer {
-    margin-top: 48px;
-    padding-top: 24px;
-    border-top: 1px solid var(--border);
-  }
-
-  .footer-title {
-    font-size: 12px;
-    font-weight: 600;
-    color: var(--text-tertiary);
-    text-transform: uppercase;
-    letter-spacing: 0.8px;
-    margin-bottom: 10px;
-  }
-
-  .footer-list {
-    list-style: none;
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-  }
-
-  .footer-list li {
-    font-size: 12.5px;
-    color: var(--text-tertiary);
-    display: flex;
-    align-items: flex-start;
-    gap: 7px;
-    line-height: 1.5;
-  }
-
-  .footer-list li::before {
-    content: '·';
-    flex-shrink: 0;
-    color: var(--text-tertiary);
-  }
-
-  /* ===== 响应式 ===== */
-  @media (max-width: 600px) {
-    .container { padding: 0 14px 48px; }
-    .header { padding: 32px 0 24px; }
-    h1 { font-size: 22px; }
-    .card { padding: 18px; }
-    .overview-card { padding: 18px; }
-    .overview-main { font-size: 18px; }
-    .btn-group { flex-direction: column; }
-    .btn { justify-content: center; }
-    .issue-card-header { flex-wrap: wrap; }
-  }
+:root {
+  --bg:#f5f5f3; --surface:#fff; --surface-2:#f9f9f8; --surface-3:#f0f0ee;
+  --border:#e4e4e0; --border-strong:#d0d0cb;
+  --text-primary:#1a1a18; --text-secondary:#5a5a56; --text-tertiary:#8a8a84;
+  --blue:#2563eb; --blue-h:#1d4ed8; --blue-l:#eff6ff; --blue-b:#bfdbfe;
+  --orange:#ea580c; --orange-l:#fff7ed; --orange-b:#fed7aa;
+  --red:#dc2626; --red-l:#fef2f2; --red-b:#fecaca;
+  --green:#16a34a; --green-l:#f0fdf4; --green-b:#bbf7d0;
+  --yellow:#d97706; --yellow-l:#fffbeb; --yellow-b:#fde68a;
+  --purple:#7c3aed; --purple-l:#f5f3ff; --purple-b:#ddd6fe;
+  --teal:#0d9488; --teal-l:#f0fdfa; --teal-b:#99f6e4;
+  --r:10px; --rs:6px; --rl:14px;
+  --sh:0 1px 3px rgba(0,0,0,.06),0 1px 2px rgba(0,0,0,.04);
+  --sh-md:0 4px 12px rgba(0,0,0,.08),0 1px 3px rgba(0,0,0,.04);
+  --sh-lg:0 8px 24px rgba(0,0,0,.1),0 2px 6px rgba(0,0,0,.06);
+  --font:'PingFang SC','Microsoft YaHei','Hiragino Sans GB',sans-serif;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--font);background:var(--bg);color:var(--text-primary);line-height:1.6;min-height:100vh;font-size:15px}
+
+/* ── nav ── */
+.top-nav{background:var(--surface);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:100;box-shadow:0 1px 4px rgba(0,0,0,.05)}
+.nav-inner{max-width:920px;margin:0 auto;padding:0 20px;display:flex;align-items:center;height:52px}
+.nav-brand{font-size:14px;font-weight:700;color:var(--text-primary);letter-spacing:-.2px;margin-right:20px;white-space:nowrap}
+.nav-tabs{display:flex;gap:2px;height:100%;align-items:center}
+.nav-tab{display:inline-flex;align-items:center;gap:5px;padding:6px 12px;border-radius:var(--rs);font-size:13px;font-weight:500;color:var(--text-secondary);cursor:pointer;border:none;background:transparent;font-family:var(--font);transition:all .15s;white-space:nowrap}
+.nav-tab:hover{background:var(--surface-2);color:var(--text-primary)}
+.nav-tab.active{background:var(--blue-l);color:var(--blue);font-weight:600}
+.nav-badge{display:inline-flex;align-items:center;justify-content:center;min-width:18px;height:18px;padding:0 5px;border-radius:9px;font-size:11px;font-weight:700;background:var(--blue);color:#fff;line-height:1}
+
+/* ── pages ── */
+.page{display:none;max-width:920px;margin:0 auto;padding:28px 20px 80px}
+.page.active{display:block}
+
+/* ── card ── */
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:24px;box-shadow:var(--sh)}
+
+/* ── page header ── */
+.page-hdr{margin-bottom:22px}
+.page-badge{display:inline-flex;align-items:center;gap:6px;background:var(--blue-l);color:var(--blue);font-size:12px;font-weight:500;padding:4px 10px;border-radius:20px;margin-bottom:10px}
+.page-badge::before{content:'';display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--blue)}
+.page-title{font-size:22px;font-weight:700;letter-spacing:-.5px;margin-bottom:6px}
+.page-desc{font-size:13.5px;color:var(--text-secondary);line-height:1.7}
+
+/* ── inputs ── */
+.inp-block{margin-bottom:16px}
+.inp-label{display:flex;justify-content:space-between;align-items:center;margin-bottom:7px}
+.inp-label-text{font-size:12px;font-weight:600;color:var(--text-secondary);letter-spacing:.5px;text-transform:uppercase}
+.char-count{font-size:12px;color:var(--text-tertiary);font-variant-numeric:tabular-nums}
+input[type=text],textarea,select{width:100%;border:1px solid var(--border-strong);border-radius:var(--rs);padding:10px 13px;font-family:var(--font);font-size:14px;color:var(--text-primary);background:var(--surface-2);transition:border-color .15s,box-shadow .15s,background .15s;outline:none;resize:vertical}
+input[type=text]:focus,textarea:focus,select:focus{border-color:var(--blue);background:var(--surface);box-shadow:0 0 0 3px rgba(37,99,235,.1)}
+input[type=text]{height:42px;resize:none}
+textarea{height:130px;min-height:80px;line-height:1.7}
+select{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%238a8a84' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;padding-right:32px;cursor:pointer}
+
+/* ── buttons ── */
+.btn{display:inline-flex;align-items:center;gap:6px;padding:9px 17px;border-radius:var(--rs);font-family:var(--font);font-size:13.5px;font-weight:500;cursor:pointer;border:1px solid transparent;transition:all .15s;white-space:nowrap}
+.btn-primary{background:var(--blue);color:#fff}
+.btn-primary:hover{background:var(--blue-h);box-shadow:0 2px 8px rgba(37,99,235,.28);transform:translateY(-1px)}
+.btn-primary:active{transform:translateY(0)}
+.btn-ghost{background:var(--surface);color:var(--text-secondary);border-color:var(--border-strong)}
+.btn-ghost:hover{background:var(--surface-2);color:var(--text-primary)}
+.btn-danger{background:var(--red-l);color:var(--red);border-color:var(--red-b)}
+.btn-danger:hover{background:#fee2e2}
+.btn-sm{padding:5px 11px;font-size:12px}
+.btn-group{display:flex;gap:10px;margin-top:18px;flex-wrap:wrap}
+
+/* ── toast ── */
+.toast{display:none;align-items:center;gap:8px;margin-top:11px;padding:9px 13px;background:var(--yellow-l);border:1px solid var(--yellow-b);border-radius:var(--rs);font-size:13px;color:var(--yellow)}
+.toast.show{display:flex}
+
+/* ── divider ── */
+.divider{height:1px;background:var(--border);margin:26px 0}
+
+/* ── result ── */
+#result-section{display:none}
+#result-section.show{display:block}
+.result-title{font-size:15px;font-weight:700;margin-bottom:14px}
+
+.overview-card{border-radius:var(--r);padding:20px 22px;margin-bottom:14px;border:1px solid var(--border);background:var(--surface);box-shadow:var(--sh)}
+.overview-top{display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:14px}
+.overview-main{font-size:19px;font-weight:700;letter-spacing:-.5px}
+.overview-sub{font-size:13px;color:var(--text-secondary);margin-top:4px}
+.level-badge{display:inline-flex;align-items:center;gap:6px;padding:7px 15px;border-radius:24px;font-size:13px;font-weight:600}
+.level-badge::before{content:'';width:7px;height:7px;border-radius:50%;background:currentColor;opacity:.8}
+.level-low{background:var(--green-l);color:var(--green);border:1px solid var(--green-b)}
+.level-mid{background:var(--yellow-l);color:var(--yellow);border:1px solid var(--yellow-b)}
+.level-high{background:var(--red-l);color:var(--red);border:1px solid var(--red-b)}
+
+.empty-state{text-align:center;padding:30px 20px}
+.empty-icon{font-size:30px;margin-bottom:10px}
+.empty-title{font-size:15px;font-weight:600;color:var(--green);margin-bottom:5px}
+.empty-desc{font-size:13px;color:var(--text-tertiary)}
+
+.issue-list{display:flex;flex-direction:column;gap:11px}
+.issue-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);overflow:hidden;box-shadow:var(--sh);transition:box-shadow .15s}
+.issue-card:hover{box-shadow:var(--sh-md)}
+.issue-card-hdr{display:flex;align-items:center;gap:9px;padding:11px 16px;border-bottom:1px solid var(--border);background:var(--surface-2);flex-wrap:wrap}
+.issue-idx{font-size:11px;font-weight:600;color:var(--text-tertiary);min-width:24px}
+.issue-cat{font-size:13px;font-weight:600;color:var(--text-primary);flex:1}
+
+/* source badge on issue card */
+.issue-source{font-size:10.5px;font-weight:500;padding:2px 7px;border-radius:10px;border:1px solid var(--border);background:var(--surface-3);color:var(--text-tertiary)}
+.issue-source.xhs{background:var(--red-l);color:var(--red);border-color:var(--red-b)}
+.issue-source.dy{background:var(--blue-l);color:var(--blue);border-color:var(--blue-b)}
+.issue-source.lib{background:var(--purple-l);color:var(--purple);border-color:var(--purple-b)}
+
+.sev-tag{display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:600;padding:3px 8px;border-radius:12px}
+.sev-tag::before{content:'●';font-size:7px}
+.sev-high{background:var(--red-l);color:var(--red);border:1px solid var(--red-b)}
+.sev-med{background:var(--orange-l);color:var(--orange);border:1px solid var(--orange-b)}
+
+.issue-card-body{padding:14px 16px;display:flex;flex-direction:column;gap:13px}
+.issue-sent{background:var(--surface-2);border-left:3px solid var(--border-strong);padding:9px 13px;border-radius:0 var(--rs) var(--rs) 0;font-size:14px;line-height:1.75}
+.issue-sent mark{background:#fef08a;color:var(--text-primary);border-radius:2px;padding:1px 2px;font-weight:600}
+.ifield{display:flex;flex-direction:column;gap:4px}
+.ifield-lbl{font-size:11px;font-weight:600;color:var(--text-tertiary);text-transform:uppercase;letter-spacing:.6px}
+.ifield-val{font-size:13px;color:var(--text-secondary);line-height:1.65}
+.sug-list{display:flex;flex-direction:column;gap:5px}
+.sug-item{display:flex;align-items:flex-start;gap:7px;font-size:13px;color:var(--text-secondary);line-height:1.6}
+.sug-dot{flex-shrink:0;margin-top:6px;width:5px;height:5px;border-radius:50%;background:var(--blue);opacity:.5}
+
+/* ── rules page ── */
+.tbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;gap:12px;flex-wrap:wrap}
+.tbar-stats{font-size:13px;color:var(--text-secondary)}
+.tbar-stats strong{color:var(--text-primary);font-weight:600}
+.rule-items{display:flex;flex-direction:column;gap:9px}
+.rule-item{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);overflow:hidden;box-shadow:var(--sh)}
+.rule-item-hdr{display:flex;align-items:center;gap:9px;padding:12px 15px;cursor:pointer;user-select:none;transition:background .1s}
+.rule-item-hdr:hover{background:var(--surface-2)}
+.ri-toggle{font-size:10px;color:var(--text-tertiary);transition:transform .2s;flex-shrink:0}
+.rule-item.open .ri-toggle{transform:rotate(90deg)}
+.ri-name{font-size:14px;font-weight:600;color:var(--text-primary);flex:1}
+.ri-meta{display:flex;align-items:center;gap:7px}
+.src-tag{font-size:11px;font-weight:500;padding:2px 8px;border-radius:10px;background:var(--surface-3);color:var(--text-tertiary);border:1px solid var(--border)}
+.src-tag.builtin-xhs{background:var(--red-l);color:var(--red);border-color:var(--red-b)}
+.src-tag.builtin-dy{background:var(--blue-l);color:var(--blue);border-color:var(--blue-b)}
+.src-tag.builtin-gen{background:var(--green-l);color:var(--green);border-color:var(--green-b)}
+.src-tag.custom{background:var(--purple-l);color:var(--purple);border-color:var(--purple-b)}
+.ri-actions{display:flex;gap:5px;flex-shrink:0}
+.rule-item-body{display:none;padding:14px;border-top:1px solid var(--border);background:var(--surface-2)}
+.rule-item.open .rule-item-body{display:block}
+.rd-grid{display:grid;grid-template-columns:1fr 1fr;gap:13px;margin-bottom:13px}
+.rd-field{display:flex;flex-direction:column;gap:5px}
+.rd-lbl{font-size:11px;font-weight:600;color:var(--text-tertiary);text-transform:uppercase;letter-spacing:.5px}
+.rd-val{font-size:13px;color:var(--text-secondary);line-height:1.6}
+.kchips{display:flex;flex-wrap:wrap;gap:5px}
+.kchip{font-size:12px;padding:2px 8px;border-radius:10px;background:var(--surface-3);border:1px solid var(--border);color:var(--text-secondary)}
+
+/* ── word library page ── */
+.lib-items{display:flex;flex-direction:column;gap:9px}
+.lib-item{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);overflow:hidden;box-shadow:var(--sh)}
+.lib-item-hdr{display:flex;align-items:center;gap:9px;padding:12px 15px;cursor:pointer;user-select:none;transition:background .1s}
+.lib-item-hdr:hover{background:var(--surface-2)}
+.lib-item.open .ri-toggle{transform:rotate(90deg)}
+.lib-name{font-size:14px;font-weight:600;color:var(--text-primary);flex:1}
+.lib-count{font-size:12px;color:var(--text-tertiary);white-space:nowrap}
+.lib-item-body{display:none;padding:14px;border-top:1px solid var(--border);background:var(--surface-2)}
+.lib-item.open .lib-item-body{display:block}
+.lib-desc-text{font-size:13px;color:var(--text-secondary);margin-bottom:10px;line-height:1.6}
+.lib-add-row{display:flex;gap:8px;margin-top:10px}
+.lib-add-row input{flex:1}
+
+/* ── modal ── */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.35);z-index:200;align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(2px)}
+.modal-overlay.show{display:flex}
+.modal{background:var(--surface);border-radius:var(--rl);width:100%;max-width:520px;max-height:90vh;overflow-y:auto;box-shadow:var(--sh-lg);animation:mIn .18s ease}
+@keyframes mIn{from{opacity:0;transform:scale(.96) translateY(8px)}to{opacity:1;transform:scale(1) translateY(0)}}
+.modal-hdr{display:flex;align-items:center;justify-content:space-between;padding:18px 22px 14px;border-bottom:1px solid var(--border)}
+.modal-title{font-size:16px;font-weight:700}
+.modal-close{width:28px;height:28px;border-radius:50%;border:none;background:var(--surface-3);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:14px;color:var(--text-secondary);transition:background .15s;font-family:var(--font);line-height:1}
+.modal-close:hover{background:var(--border)}
+.modal-body{padding:18px 22px}
+.modal-foot{padding:14px 22px 18px;border-top:1px solid var(--border);display:flex;justify-content:flex-end;gap:9px}
+.ff{margin-bottom:16px}
+.ff:last-child{margin-bottom:0}
+.fl{display:block;font-size:12px;font-weight:600;color:var(--text-secondary);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px}
+.fhint{font-size:12px;color:var(--text-tertiary);margin-top:4px;line-height:1.5}
+.confirm-modal .modal-body{text-align:center;padding:26px 22px 18px}
+.conf-icon{font-size:34px;margin-bottom:10px}
+.conf-title{font-size:16px;font-weight:700;margin-bottom:7px}
+.conf-desc{font-size:13px;color:var(--text-secondary);line-height:1.6}
+
+/* ── footer ── */
+.footer{margin-top:44px;padding-top:22px;border-top:1px solid var(--border)}
+.footer-title{font-size:11px;font-weight:600;color:var(--text-tertiary);text-transform:uppercase;letter-spacing:.8px;margin-bottom:9px}
+.footer-list{list-style:none;display:flex;flex-direction:column;gap:5px}
+.footer-list li{font-size:12px;color:var(--text-tertiary);display:flex;align-items:flex-start;gap:6px;line-height:1.5}
+.footer-list li::before{content:'·';flex-shrink:0}
+
+/* ── info banner ── */
+.info-banner{display:flex;align-items:flex-start;gap:10px;padding:11px 14px;background:var(--teal-l);border:1px solid var(--teal-b);border-radius:var(--rs);font-size:12.5px;color:var(--teal);margin-bottom:16px;line-height:1.55}
+
+/* ── platform selector ── */
+.platform-row{display:flex;align-items:center;gap:10px;margin-bottom:18px;flex-wrap:wrap}
+.platform-label{font-size:12px;font-weight:600;color:var(--text-secondary);letter-spacing:.5px;text-transform:uppercase;white-space:nowrap}
+.platform-opts{display:flex;gap:7px;flex-wrap:wrap}
+.plat-btn{display:inline-flex;align-items:center;gap:6px;padding:7px 14px;border-radius:20px;font-size:13px;font-weight:500;cursor:pointer;border:1.5px solid var(--border-strong);background:var(--surface-2);color:var(--text-secondary);font-family:var(--font);transition:all .15s;white-space:nowrap}
+.plat-btn:hover{border-color:var(--border-strong);background:var(--surface-3);color:var(--text-primary)}
+.plat-btn.active-all{border-color:var(--blue);background:var(--blue-l);color:var(--blue);font-weight:600}
+.plat-btn.active-xhs{border-color:#e84565;background:#fff0f3;color:#e84565;font-weight:600}
+.plat-btn.active-dy{border-color:#161823;background:#f0f0f0;color:#161823;font-weight:600}
+.plat-hint{font-size:12px;color:var(--text-tertiary);margin-top:8px;line-height:1.5}
+/* 结果区平台提示条 */
+.platform-result-bar{display:flex;align-items:center;gap:8px;padding:9px 13px;border-radius:var(--rs);font-size:12.5px;font-weight:500;margin-bottom:13px}
+.platform-result-bar.bar-all{background:var(--blue-l);color:var(--blue);border:1px solid var(--blue-b)}
+.platform-result-bar.bar-xhs{background:#fff0f3;color:#e84565;border:1px solid #fcc}
+.platform-result-bar.bar-dy{background:#f0f0f0;color:#161823;border:1px solid #ccc}
+
+/* ── responsive ── */
+@media(max-width:600px){
+  .page{padding:18px 13px 60px}
+  .card{padding:16px}
+  .btn-group{flex-direction:column}
+  .btn{justify-content:center}
+  .nav-brand{display:none}
+  .overview-main{font-size:17px}
+  .rd-grid{grid-template-columns:1fr}
+}
 </style>
 </head>
 <body>
 
-<div class="container">
+<!-- nav -->
+<nav class="top-nav">
+  <div class="nav-inner">
+    <div class="nav-brand">创作者文案自查工具</div>
+    <div class="nav-tabs">
+      <button class="nav-tab active" data-tab="check">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>文案自查
+      </button>
+      <button class="nav-tab" data-tab="rules">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="1"/><path d="M9 12h6M9 16h4"/></svg>规则管理
+        <span class="nav-badge" id="badge-rules">0</span>
+      </button>
+      <button class="nav-tab" data-tab="lib">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>词库管理
+        <span class="nav-badge" id="badge-lib">0</span>
+      </button>
+    </div>
+  </div>
+</nav>
 
-  <!-- ===== 顶部标题区 ===== -->
-  <header class="header">
-    <div class="header-badge">本地运行 · 不上传内容</div>
-    <h1>创作者文案自查工具</h1>
-    <p class="subtitle">本工具仅在本地浏览器运行，不上传任何内容，用于发布前的表达自查与改写建议。</p>
-  </header>
-
-  <!-- ===== 输入区 ===== -->
+<!-- ══════════════ 文案自查页 ══════════════ -->
+<div class="page active" id="page-check">
+  <div class="page-hdr">
+    <div class="page-badge">本地运行 · 不上传内容</div>
+    <h1 class="page-title">文案自查</h1>
+    <p class="page-desc">输入标题和正文，逐句检测值得调整的表达，并给出改写建议。规则参考小红书、抖音等平台公开社区规范整理，仅供创作者自查参考。</p>
+  </div>
   <div class="card">
-    <div class="input-section">
-      <div class="input-label">
-        <span class="input-label-text">标题</span>
-        <span class="char-count" id="title-count">0 字</span>
+    <div class="platform-row">
+      <span class="platform-label">发布平台</span>
+      <div class="platform-opts">
+        <button class="plat-btn active-all" data-plat="all">全平台通用</button>
+        <button class="plat-btn" data-plat="xhs">小红书</button>
+        <button class="plat-btn" data-plat="dy">抖音</button>
       </div>
+    </div>
+    <div class="plat-hint" id="plat-hint">当前模式：检测全部规则，通用 + 小红书 + 抖音规范均生效。</div>
+    <div style="height:14px"></div>
+    <div class="inp-block">
+      <div class="inp-label"><span class="inp-label-text">标题</span><span class="char-count" id="title-count">0 字</span></div>
       <input type="text" id="title-input" placeholder="输入文案标题（选填）">
     </div>
-
-    <div class="input-section">
-      <div class="input-label">
-        <span class="input-label-text">正文</span>
-        <span class="char-count" id="body-count">0 字</span>
-      </div>
-      <textarea id="body-input" placeholder="输入正文内容（选填，但标题和正文不能同时为空）"></textarea>
+    <div class="inp-block">
+      <div class="inp-label"><span class="inp-label-text">正文</span><span class="char-count" id="body-count">0 字</span></div>
+      <textarea id="body-input" placeholder="输入正文内容（标题和正文不能同时为空）"></textarea>
     </div>
-
-    <!-- 提示消息 -->
-    <div class="toast" id="empty-toast">
-      ⚠ 请先在标题或正文中输入内容，再开始自查。
-    </div>
-
+    <div class="toast" id="empty-toast">⚠ 请先输入标题或正文内容，再开始自查。</div>
     <div class="btn-group">
       <button class="btn btn-primary" id="btn-check">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
-        开始自查
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>开始自查
       </button>
       <button class="btn btn-ghost" id="btn-clear">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6"/></svg>
-        清空内容
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6"/></svg>清空内容
       </button>
       <button class="btn btn-ghost" id="btn-example">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
-        加载示例
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>加载示例
       </button>
     </div>
   </div>
-
-  <!-- ===== 结果区 ===== -->
   <div id="result-section">
     <div class="divider"></div>
-
-    <div class="result-header">
-      <span class="result-title">自查结果</span>
-    </div>
-
-    <!-- 总览卡片 -->
-    <div class="overview-card" id="overview-card">
-      <!-- 由 JS 动态填充 -->
-    </div>
-
-    <!-- 问题列表 -->
-    <div class="issue-list" id="issue-list">
-      <!-- 由 JS 动态填充 -->
-    </div>
+    <div class="result-title">自查结果</div>
+    <div class="platform-result-bar bar-all" id="platform-result-bar"></div>
+    <div class="overview-card" id="overview-card"></div>
+    <div class="issue-list" id="issue-list"></div>
   </div>
-
-  <!-- ===== 页脚 ===== -->
   <footer class="footer">
     <div class="footer-title">使用说明</div>
     <ul class="footer-list">
-      <li>本工具不代表任何平台的审核结果，不预测账号状态或内容流量。</li>
-      <li>仅用于创作者发布前的本地表达自查与语言优化参考。</li>
-      <li>涉及医疗、金融、法律等专业领域的内容，需结合人工复核判断。</li>
+      <li>本工具不代表任何平台审核结果，不预测账号状态或内容流量。</li>
+      <li>规则参考各平台公开社区规范整理，不构成平台官方判断依据。</li>
+      <li>仅用于创作者发布前本地表达自查与语言优化参考。</li>
+      <li>涉及医疗、金融、法律等专业领域内容，须结合人工复核判断。</li>
     </ul>
   </footer>
+</div>
 
-</div><!-- /container -->
+<!-- ══════════════ 规则管理页 ══════════════ -->
+<div class="page" id="page-rules">
+  <div class="page-hdr">
+    <h1 class="page-title">规则管理</h1>
+    <p class="page-desc">管理文案自查规则库。内置规则已标注参考来源，所有规则均可编辑或删除，也可新增自定义规则。</p>
+  </div>
+  <div class="info-banner">
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="flex-shrink:0;margin-top:1px"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+    内置规则参考来源：<strong>小红书《社区公约 2.0》《社区规范》</strong>及<strong>抖音《社区自律公约》《社区医疗健康公约》</strong>等平台公开文件整理，不代表平台官方审核标准。
+  </div>
+  <div class="tbar">
+    <div class="tbar-stats" id="rules-stats"></div>
+    <button class="btn btn-primary btn-sm" id="btn-add-rule">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>新增规则
+    </button>
+  </div>
+  <div class="rule-items" id="rule-items"></div>
+  <footer class="footer">
+    <div class="footer-title">关于规则库</div>
+    <ul class="footer-list">
+      <li>规则数据保存在本地浏览器（localStorage），清除浏览器数据后重置为内置规则。</li>
+      <li>触发词用中文逗号「，」或英文逗号「,」分隔。</li>
+      <li>改写建议每行一条，建议 2-4 条。</li>
+    </ul>
+  </footer>
+</div>
+
+<!-- ══════════════ 词库管理页 ══════════════ -->
+<div class="page" id="page-lib">
+  <div class="page-hdr">
+    <h1 class="page-title">词库管理</h1>
+    <p class="page-desc">词库是比规则更轻量的词表。每个词库有名称、整体说明和风险等级，命中后统一使用词库说明提示。适合快速积累踩坑词、平台敏感词等。</p>
+  </div>
+  <div class="tbar">
+    <div class="tbar-stats" id="lib-stats"></div>
+    <button class="btn btn-primary btn-sm" id="btn-add-lib">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>新建词库
+    </button>
+  </div>
+  <div class="lib-items" id="lib-items"></div>
+  <footer class="footer">
+    <div class="footer-title">关于词库</div>
+    <ul class="footer-list">
+      <li>词库数据保存在本地浏览器中，不上传，不同步。</li>
+      <li>快速加词：在词库展开后直接输入并回车。</li>
+      <li>批量导入：粘贴多个词（逗号或换行分隔），点击导入按钮。</li>
+      <li>词库命中后显示词库整体说明，不显示逐词建议。</li>
+    </ul>
+  </footer>
+</div>
+
+<!-- ══ 规则新增/编辑弹窗 ══ -->
+<div class="modal-overlay" id="rule-modal">
+  <div class="modal">
+    <div class="modal-hdr">
+      <span class="modal-title" id="rule-modal-title">新增规则</span>
+      <button class="modal-close" id="rmc">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="ff"><label class="fl" for="f-cat">规则类别名称</label><input type="text" id="f-cat" placeholder="如：绝对化表达、健康功效夸大……"></div>
+      <div class="ff"><label class="fl" for="f-sev">风险等级</label><select id="f-sev"><option value="high">较高风险</option><option value="medium">中等风险</option></select></div>
+      <div class="ff"><label class="fl" for="f-kw">触发词</label><input type="text" id="f-kw" placeholder="用逗号分隔，如：最好，第一，唯一"><div class="fhint">中文逗号「，」或英文逗号「,」均可</div></div>
+      <div class="ff"><label class="fl" for="f-msg">风险说明</label><textarea id="f-msg" style="height:76px" placeholder="简要说明这类表达可能存在的问题……"></textarea></div>
+      <div class="ff"><label class="fl" for="f-sug">改写建议</label><textarea id="f-sug" style="height:96px" placeholder="每行一条建议&#10;如：将「最」替换为「之一」&#10;加入限定语说明个人体验范围"></textarea><div class="fhint">建议填写 2-4 条，每行一条</div></div>
+    </div>
+    <div class="modal-foot"><button class="btn btn-ghost" id="rmc2">取消</button><button class="btn btn-primary" id="rms">保存规则</button></div>
+  </div>
+</div>
+
+<!-- ══ 词库新建/编辑弹窗 ══ -->
+<div class="modal-overlay" id="lib-modal">
+  <div class="modal">
+    <div class="modal-hdr">
+      <span class="modal-title" id="lib-modal-title">新建词库</span>
+      <button class="modal-close" id="lmc">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="ff"><label class="fl" for="l-name">词库名称</label><input type="text" id="l-name" placeholder="如：我的踩坑词、平台敏感词……"></div>
+      <div class="ff"><label class="fl" for="l-sev">风险等级</label><select id="l-sev"><option value="high">较高风险</option><option value="medium">中等风险</option></select></div>
+      <div class="ff"><label class="fl" for="l-desc">整体说明</label><textarea id="l-desc" style="height:76px" placeholder="命中词库中的词时，结果区显示这段说明……"></textarea></div>
+      <div class="ff"><label class="fl" for="l-words">初始词（选填）</label><textarea id="l-words" style="height:80px" placeholder="可以先批量粘贴一批词，逗号或换行分隔。词库创建后也可逐个添加。"></textarea><div class="fhint">逗号或换行分隔均可</div></div>
+    </div>
+    <div class="modal-foot"><button class="btn btn-ghost" id="lmc2">取消</button><button class="btn btn-primary" id="lms">保存词库</button></div>
+  </div>
+</div>
+
+<!-- ══ 词库编辑信息弹窗（只改名称/说明/等级）══ -->
+<div class="modal-overlay" id="lib-edit-modal">
+  <div class="modal">
+    <div class="modal-hdr">
+      <span class="modal-title">编辑词库信息</span>
+      <button class="modal-close" id="lemc">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="ff"><label class="fl" for="le-name">词库名称</label><input type="text" id="le-name"></div>
+      <div class="ff"><label class="fl" for="le-sev">风险等级</label><select id="le-sev"><option value="high">较高风险</option><option value="medium">中等风险</option></select></div>
+      <div class="ff"><label class="fl" for="le-desc">整体说明</label><textarea id="le-desc" style="height:76px"></textarea></div>
+    </div>
+    <div class="modal-foot"><button class="btn btn-ghost" id="lemc2">取消</button><button class="btn btn-primary" id="lems">保存</button></div>
+  </div>
+</div>
+
+<!-- ══ 批量导入词弹窗 ══ -->
+<div class="modal-overlay" id="import-modal">
+  <div class="modal">
+    <div class="modal-hdr">
+      <span class="modal-title">批量导入词</span>
+      <button class="modal-close" id="imc">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="ff"><label class="fl" for="i-words">粘贴词列表</label><textarea id="i-words" style="height:140px" placeholder="每行一词，或用逗号分隔：&#10;闭眼冲&#10;错过血亏&#10;赶紧买，人人必备"></textarea><div class="fhint">重复的词会自动去重</div></div>
+    </div>
+    <div class="modal-foot"><button class="btn btn-ghost" id="imc2">取消</button><button class="btn btn-primary" id="ims">导入</button></div>
+  </div>
+</div>
+
+<!-- ══ 删除确认弹窗 ══ -->
+<div class="modal-overlay" id="confirm-modal">
+  <div class="modal confirm-modal" style="max-width:360px">
+    <div class="modal-body">
+      <div class="conf-icon">🗑️</div>
+      <div class="conf-title" id="conf-title">确认删除？</div>
+      <div class="conf-desc" id="conf-desc"></div>
+    </div>
+    <div class="modal-foot" style="justify-content:center;gap:10px">
+      <button class="btn btn-ghost" id="conf-cancel">取消</button>
+      <button class="btn btn-danger" id="conf-ok">确认删除</button>
+    </div>
+  </div>
+</div>
 
 <script>
-// ============================================================
-// rules.js — 内联规则数据
-// 每条规则字段说明：
-//   id          唯一标识
-//   category    类别名称
-//   severity    风险等级：high | medium
-//   keywords    触发词数组（字符串匹配）
-//   message     风险说明
-//   suggestions 改写建议（2-4条）
-// ============================================================
-const RULES = [
-
-  // ── 1. 绝对化表达 ──────────────────────────────────────
+// ═══════════════════════════════════════════════════════════
+// 内置规则
+// source 字段：builtin-gen(通用) | builtin-xhs(参考小红书) | builtin-dy(参考抖音)
+// ═══════════════════════════════════════════════════════════
+const BUILT_IN_RULES = [
+  // ── 通用规则 ──
   {
-    id: 'abs-001',
-    category: '绝对化表达',
-    severity: 'high',
-    keywords: ['最好', '最佳', '最强', '最顶', '最优', '最牛', '最火', '第一', '唯一', '绝对', '100%', '百分之百', '永久', '永远有效', '终极', '顶级', '无与伦比', '史上最'],
-    message: '含有绝对化用词，可能使读者产生过高预期，或引发对内容真实性的质疑。',
-    suggestions: [
-      '将"最"替换为"之一"，如"效果较好的方法之一"',
-      '加入限定语，说明适用范围或个人体验，如"我用下来感觉是……"',
-      '用具体数据或场景描述代替笼统的极值表达',
-      '换为比较级表达，如"比以前好用很多"',
-    ]
+    id:'abs-001', category:'绝对化表达', severity:'high', source:'builtin-gen',
+    keywords:['市面上最','全网最','史上最','最好用','最有效','最强','最顶','第一名','唯一一个','绝对有效','永久有效','终极方案','无与伦比','顶级'],
+    message:'含有绝对化用词，可能使读者产生过高预期，或引发对内容真实性的质疑。',
+    suggestions:['将"最"替换为"之一"，如"效果较好的方法之一"','加入限定语，说明适用范围或个人体验，如"我用下来感觉是……"','用具体数据或场景描述代替笼统的极值表达','换为比较级，如"比以前好用很多"'],
+  },
+  {
+    id:'pro-001', category:'过度承诺', severity:'high', source:'builtin-gen',
+    keywords:['保证有效','一定有效','立刻见效','马上见效','一定成功','完全解决','彻底解决','包会','稳过考试','百分百成功','保证好用','保证瘦','包治百病','无效退款'],
+    message:'承诺性表达过强，读者可能将其视为绝对结论，若效果不一，易引发信任问题。',
+    suggestions:['改为分享个人经验，如"我自己用了之后感觉……"','加入客观限定，如"因人而异，我的体验是……"','替换为"值得一试"或"对我来说效果不错"','说明前提条件，让建议更有参考价值'],
+  },
+  {
+    id:'emo-001', category:'过激语气', severity:'medium', source:'builtin-gen',
+    keywords:['恶心透了','气炸了','气死了','必须骂','垃圾产品','无语透了','蠢透了','太蠢了','傻透了','丑爆了','烂透了','臭不要脸','令人作呕','脑子有问题'],
+    message:'语气较为激烈，可能使部分读者感到不适，或影响内容整体的专业感与亲和力。',
+    suggestions:['将情绪表达转化为具体描述，说明让你有这种感受的原因','用"有点失望""感觉不太对"等平和措辞替代激烈词语','保留情绪的同时加入理性分析，增强说服力'],
+  },
+  {
+    id:'mkt-001', category:'过强营销感', severity:'medium', source:'builtin-gen',
+    keywords:['闭眼冲','错过血亏','赶紧买','人人必备','冲就完了','无脑入','无脑买','必须囤','赶快抢','不买后悔','买到就是赚到','全网最低价','不入亏大了'],
+    message:'营销感较强，读者可能对此类措辞产生免疫或抵触，影响内容信任度。',
+    suggestions:['改为真实使用感受分享，淡化购买引导','说明"为什么我会推荐"，而非直接催促行动','去掉催促性词汇，改为"如果你也有类似需求，可以参考"'],
+  },
+  {
+    id:'con-001', category:'结论过满', severity:'medium', source:'builtin-gen',
+    keywords:['这就是事实','毫无疑问','根本不用怀疑','一定是这样','肯定如此','没有例外','所有人都知道','无可辩驳','这是公认的','绝无可能是别的原因'],
+    message:'结论表述过于绝对，缺乏余地，读者可能对此产生质疑或反驳欲望。',
+    suggestions:['将断言改为观点，如"我认为……""在我看来……"','加入"大多数情况下""就我的经验来说"等限定语','为结论补充依据，使其更有说服力','留有余地，如"当然，也不排除其他可能性"'],
   },
 
-  // ── 2. 过度承诺 ──────────────────────────────────────
+  // ── 参考小红书《社区公约2.0》《社区规范》 ──
   {
-    id: 'pro-001',
-    category: '过度承诺',
-    severity: 'high',
-    keywords: ['保证有效', '一定有效', '立刻见效', '马上见效', '一定成功', '完全解决', '彻底解决', '包会', '稳过', '绝对可以', '肯定能', '百分百成功', '保证好用', '保证瘦', '包治', '无效退款'],
-    message: '承诺性表达过强，读者可能将其视为绝对结论，若效果不一，易引发信任问题。',
-    suggestions: [
-      '改为分享个人经验，如"我自己用了之后感觉……"',
-      '加入客观限定，如"因人而异，我的体验是……"',
-      '替换为"值得一试"或"对我来说效果不错"',
-      '说明前提条件，让建议更有参考价值',
-    ]
+    id:'xhs-001', category:'制造群体对立', severity:'high', source:'builtin-xhs',
+    keywords:['男人都是','女人都是','男的都','女的都','这类人就是','他们全都','这群人都','有钱人都','穷人都','打工人都','这种人根本','年轻人都','老人都'],
+    message:'小红书《社区公约2.0》明确反对刻意放大群体差异、制造对立情绪。此类表述对某群体作出笼统概括，可能引发反感或被判定为引战内容。',
+    suggestions:['改为个人经验表述，如"我身边有些人会……"','加入"部分""有时候"等限定词，避免一刀切','聚焦具体行为而非群体，如"这种做法让我觉得……"','以提问方式替代断言，引发读者自我思考'],
+  },
+  {
+    id:'xhs-002', category:'虚假营销/伪科学', severity:'high', source:'builtin-xhs',
+    keywords:['经科学证实','经研究证明','专家证明','临床证明','100%纯天然','零添加','无副作用','绝对安全','不含任何','医学认证','权威机构认证','国家认可'],
+    message:'小红书《社区规范》明确禁止虚假宣传和伪科学内容。使用未经证实的权威背书，可能引发读者误解，平台对此类内容较为敏感。',
+    suggestions:['去掉无法核实的权威背书，改为描述个人体验','如确有来源，标注具体出处（期刊/机构名称）','改为"有研究认为"并说明局限性，而非绝对定论','诚实说明产品成分，不做超出实际的功效声明'],
+  },
+  {
+    id:'xhs-003', category:'炫富/拜金内容', severity:'medium', source:'builtin-xhs',
+    keywords:['月薪不到不要看','穷人看了流泪','有钱人才懂','买不起就别看','这种东西穷人用不上','富人专属','这是有钱人的生活','阶层差距'],
+    message:'小红书《社区公约》抵制炫富内容，此类表述以消费能力划分群体，易造成社区氛围对立，影响内容友好度。',
+    suggestions:['去掉以收入/财富划分受众的表述','改为针对需求而非阶层，如"适合注重品质的……"','分享使用体验而非强调价格或稀缺性'],
+  },
+  {
+    id:'xhs-004', category:'未申明利益相关', severity:'medium', source:'builtin-xhs',
+    keywords:['不是广告','真的不是广告','绝对不是推广','自费购买亲测','自掏腰包','纯个人推荐非广告'],
+    message:'小红书《社区公约》要求创作者申明利益相关。过度强调"非广告"反而可能引发读者对真实性的怀疑，建议直接透明说明合作关系。',
+    suggestions:['如为合作内容，直接标注"品牌合作"或"广告"，反而更获信任','如确为自费，简单说明购买渠道即可，无需反复强调','真实分享使用感受，让内容质量本身说话'],
   },
 
-  // ── 3. 过激语气 ──────────────────────────────────────
+  // ── 参考抖音《社区自律公约》《社区医疗健康公约》 ──
   {
-    id: 'emo-001',
-    category: '过激语气',
-    severity: 'medium',
-    keywords: ['恶心', '离谱死了', '气炸了', '气死了', '必须骂', '垃圾', '无语透了', '笑死', '蠢透了', '太蠢了', '傻透了', '丑爆了', '烂透了', '臭不要脸', '令人作呕', '脑子有问题', '智障', '疯了吧'],
-    message: '语气较为激烈，可能使部分读者感到不适，或影响内容整体的专业感与亲和力。',
-    suggestions: [
-      '将情绪表达转化为具体描述，说明让你有这种感受的原因',
-      '用"有点失望""感觉不太对"等平和措辞替代激烈词语',
-      '保留情绪的同时加入理性分析，增强说服力',
-      '如确需强调，可改为"说真的，这一点确实让我难以接受"',
-    ]
+    id:'dy-001', category:'健康/功效类夸大', severity:'high', source:'builtin-dy',
+    keywords:['一周瘦','三天见效','七天祛痘','快速美白','永久脱毛','根治','彻底祛除','药到病除','治好了','治愈了','降血糖','降血压','抗癌','防癌'],
+    message:'抖音《社区医疗健康公约》禁止不科学、未经证实的健康功效声明。此类表达涉及医疗健康领域，夸大功效存在误导风险，平台对此类内容有专项治理。',
+    suggestions:['改为描述个人体验而非功效承诺，如"我用了感觉皮肤状态好了很多"','加入限定语，如"仅代表个人体验，效果因人而异"','涉及医疗健康内容，建议引导读者咨询专业医生','去掉具体时间承诺，改为"坚持使用后慢慢有所改善"'],
   },
-
-  // ── 4. 对立化表述 ──────────────────────────────────────
   {
-    id: 'opp-001',
-    category: '对立化表述',
-    severity: 'high',
-    keywords: ['男的都', '女的都', '男人都是', '女人都是', '这类人就是', '某类人全都', '他们全都', '这群人', '这种人都', '直男都', '直女都', '有钱人都', '穷人都', '老人都', '年轻人都', '打工人都'],
-    message: '对某类群体进行笼统概括，可能引发该群体读者反感，或被认为带有偏见。',
-    suggestions: [
-      '改为个人经验表述，如"我身边有些人会……"',
-      '加入"部分""有时候"等限定词，避免一刀切',
-      '聚焦具体行为而非群体，如"这种做法让我觉得……"',
-      '以提问方式替代断言，引发读者自我思考',
-    ]
+    id:'dy-002', category:'诱导行为类表述', severity:'medium', source:'builtin-dy',
+    keywords:['不关注后悔','不收藏你会后悔','赶紧转发','一键三连','强制关注','不转不是中国人','求扩散','帮我转发','转发抽奖','关注才能看','点赞才告诉你'],
+    message:'抖音《社区自律公约》明确反对强迫诱导用户互动的行为。此类措辞强制性地要求读者互动，影响内容自然传播的可信度。',
+    suggestions:['改为自然邀请，如"如果觉得有用，欢迎收藏"','让内容本身有足够吸引力，而不依赖行为引导','去掉威胁性表述，保持内容的真诚感'],
   },
-
-  // ── 5. 过强营销感 ──────────────────────────────────────
   {
-    id: 'mkt-001',
-    category: '过强营销感',
-    severity: 'medium',
-    keywords: ['闭眼冲', '错过血亏', '赶紧买', '人人必备', '冲就完了', '无脑入', '无脑买', '必须囤', '赶快抢', '限时', '秒杀', '不买后悔', '买到就是赚到', '性价比无敌', '全网最低', '不入亏大了'],
-    message: '营销感较强的表达，读者可能对此类措辞产生免疫或抵触，影响内容信任度。',
-    suggestions: [
-      '改为真实使用感受分享，淡化购买引导',
-      '说明"为什么我会推荐"，而非直接催促行动',
-      '去掉催促性词汇，改为"如果你也有类似需求，可以参考"',
-      '以问题导入，引导读者自己判断是否适合',
-    ]
+    id:'dy-003', category:'身份/资质虚构', severity:'high', source:'builtin-dy',
+    keywords:['资深专家','行业内部人士','我是医生','我是律师','多年从业经验','内部消息','业内人士透露','据我所知的内部信息','独家爆料'],
+    message:'抖音平台明确治理虚假身份和无资质内容。声称专业身份但无法核实，或以"内部消息"包装信息，容易引发平台对内容真实性的审核。',
+    suggestions:['如有真实资质，可说明但无需过度强调身份','改为第一人称分享，如"我个人了解到……"','引用信息时标注来源，增强可信度','以经验分享替代权威声明，读者更易接受'],
   },
-
-  // ── 6. 结论过满 ──────────────────────────────────────
   {
-    id: 'con-001',
-    category: '结论过满',
-    severity: 'medium',
-    keywords: ['这就是事实', '毫无疑问', '根本不用怀疑', '一定是这样', '肯定如此', '没有例外', '所有人都知道', '显而易见', '不可能有别的原因', '就是这个原因', '无可辩驳', '这是公认的', '绝无可能'],
-    message: '结论表述过于绝对，缺乏余地，读者可能对此产生质疑或反驳欲望。',
-    suggestions: [
-      '将断言改为观点，如"我认为……""在我看来……"',
-      '加入"大多数情况下""就我的经验来说"等限定语',
-      '为结论补充依据，使其更有说服力而非单纯武断',
-      '留有余地，如"当然，也不排除其他可能性"',
-    ]
+    id:'dy-004', category:'不实信息/蹭热点', severity:'high', source:'builtin-dy',
+    keywords:['独家消息','最新爆料','内幕消息','尚未公开','知情人士透露','据悉马上','官方还没说但我知道','即将曝光','等我信号'],
+    message:'抖音平台专项治理通过不实信息蹭热点获利的行为。以"独家""内幕"等方式制造悬念，若信息不实，将面临平台处置风险。',
+    suggestions:['只分享有明确来源或亲身经历的内容','引用信息时标注出处，避免让读者误以为是独家爆料','以观点分析替代"内幕"包装，更具说服力'],
   },
+];
 
-]; // end RULES
+// ═══════════════════════════════════════════════════════════
+// localStorage
+// ═══════════════════════════════════════════════════════════
+const KEY_RULES = 'copycheck_rules_v2';
+const KEY_LIBS  = 'copycheck_libs_v1';
 
+function initStorage() {
+  if (!localStorage.getItem(KEY_RULES)) localStorage.setItem(KEY_RULES, JSON.stringify(BUILT_IN_RULES));
+  if (!localStorage.getItem(KEY_LIBS))  localStorage.setItem(KEY_LIBS,  JSON.stringify([]));
+}
 
-// ============================================================
-// app.js — 内联应用逻辑
-// ============================================================
+function loadRules() { try { return JSON.parse(localStorage.getItem(KEY_RULES)) || BUILT_IN_RULES; } catch(e) { return BUILT_IN_RULES; } }
+function saveRules(r) { localStorage.setItem(KEY_RULES, JSON.stringify(r)); }
+function loadLibs()  { try { return JSON.parse(localStorage.getItem(KEY_LIBS))  || []; } catch(e) { return []; } }
+function saveLibs(l) { localStorage.setItem(KEY_LIBS,  JSON.stringify(l)); }
 
-// ── DOM 引用 ──────────────────────────────────────────────
-const titleInput   = document.getElementById('title-input');
-const bodyInput    = document.getElementById('body-input');
-const titleCount   = document.getElementById('title-count');
-const bodyCount    = document.getElementById('body-count');
-const btnCheck     = document.getElementById('btn-check');
-const btnClear     = document.getElementById('btn-clear');
-const btnExample   = document.getElementById('btn-example');
-const emptyToast   = document.getElementById('empty-toast');
-const resultSection = document.getElementById('result-section');
-const overviewCard = document.getElementById('overview-card');
-const issueList    = document.getElementById('issue-list');
+function genId() { return 'id-' + Date.now() + '-' + Math.floor(Math.random()*1000); }
 
-// ── 示例文案 ──────────────────────────────────────────────
-const EXAMPLE_TITLE = '史上最强减脂方法，100%有效，第一次见这么好的方案！';
-const EXAMPLE_BODY  = `这绝对是我用过的最好的减脂方案，保证有效，稳过所有瓶颈期！
-女的都喜欢麻烦自己，其实根本不用怀疑，答案就这一个。
-恶心死了那些靠节食减肥的人，离谱死了，这就是事实。
-闭眼冲，错过血亏，人人必备，赶紧买！
-毫无疑问，这是公认的最佳选择，所有人都知道这一点。`;
-
-// ── 字数统计（实时）─────────────────────────────────────
-titleInput.addEventListener('input', () => {
-  titleCount.textContent = titleInput.value.length + ' 字';
-});
-
-bodyInput.addEventListener('input', () => {
-  bodyCount.textContent = bodyInput.value.length + ' 字';
-});
-
-// ── 分句函数 ──────────────────────────────────────────────
-// 按中英文标点和换行切割，过滤空句
+// ═══════════════════════════════════════════════════════════
+// 检测
+// ═══════════════════════════════════════════════════════════
 function splitSentences(text) {
-  // 切割符：句号、问号、感叹号、分号、换行（含多个空白）
-  const parts = text.split(/[。！？；!?;\n]+/);
-  return parts
-    .map(s => s.trim())
-    .filter(s => s.length > 0);
+  return text.split(/[。！？；!?;\n]+/).map(s=>s.trim()).filter(s=>s.length>0);
 }
 
-// ── 高亮函数 ──────────────────────────────────────────────
-// 在句子中高亮命中词（支持多个词高亮）
-function highlightKeyword(sentence, keyword) {
-  // 转义正则特殊字符
-  const escaped = keyword.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-  const re = new RegExp(escaped, 'g');
-  return sentence.replace(re, `<mark>${keyword}</mark>`);
+function hlKw(sentence, kw) {
+  const esc = kw.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');
+  return sentence.replace(new RegExp(esc,'g'),`<mark>${kw}</mark>`);
 }
 
-// ── 核心检测函数 ──────────────────────────────────────────
-function runCheck(titleText, bodyText) {
-  const fullText = [titleText, bodyText].filter(Boolean).join('\n');
-  const sentences = splitSentences(fullText);
+function escH(s) {
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+// platform: 'all' | 'xhs' | 'dy'
+// 逻辑：
+//   all → 所有规则均检测，结果按 高风险优先 排序
+//   xhs → 所有规则均检测，但 builtin-xhs 规则排在最前面，其次高风险，再其次其他
+//   dy  → 同上，builtin-dy 排最前
+function runCheck(title, body, platform) {
+  const rules = loadRules();
+  const libs  = loadLibs();
+  const full  = [title, body].filter(Boolean).join('\n');
+  const sents = splitSentences(full);
   const results = [];
 
-  // 逐句 × 逐规则 × 逐关键词 匹配
-  sentences.forEach(sentence => {
-    RULES.forEach(rule => {
-      rule.keywords.forEach(keyword => {
-        if (sentence.includes(keyword)) {
-          // 同一句话 + 同一关键词只记录一次
-          const alreadyLogged = results.some(
-            r => r.sentence === sentence && r.matchedKeyword === keyword
-          );
-          if (!alreadyLogged) {
-            results.push({
-              sentence,
-              matchedKeyword: keyword,
-              category: rule.category,
-              severity: rule.severity,
-              message: rule.message,
-              suggestions: rule.suggestions,
-            });
-          }
+  // 规则匹配（全部规则都跑，平台只影响排序权重）
+  sents.forEach(sent => {
+    rules.forEach(rule => {
+      rule.keywords.forEach(kw => {
+        const k = kw.trim();
+        if (!k) return;
+        if (sent.includes(k) && !results.some(r=>r.sentence===sent&&r.matchedKeyword===k)) {
+          results.push({
+            sentence: sent, matchedKeyword: k,
+            category: rule.category, severity: rule.severity,
+            message: rule.message, suggestions: rule.suggestions,
+            resultSource: rule.source || 'builtin-gen',
+          });
         }
       });
     });
   });
 
-  return results;
+  // 词库匹配
+  sents.forEach(sent => {
+    libs.forEach(lib => {
+      (lib.words || []).forEach(kw => {
+        const k = kw.trim();
+        if (!k) return;
+        if (sent.includes(k) && !results.some(r=>r.sentence===sent&&r.matchedKeyword===k)) {
+          results.push({
+            sentence: sent, matchedKeyword: k,
+            category: lib.name, severity: lib.severity,
+            message: lib.description,
+            suggestions: [],
+            resultSource: 'lib',
+          });
+        }
+      });
+    });
+  });
+
+  // 排序：平台优先 → 高风险优先 → 其他
+  // 权重越小越靠前
+  function sortWeight(r) {
+    // 平台匹配权重
+    let platW = 2; // 默认：非目标平台规则
+    if (platform === 'all') platW = 0; // 全部平台同等权重
+    else if (platform === 'xhs' && r.resultSource === 'builtin-xhs') platW = 0;
+    else if (platform === 'dy'  && r.resultSource === 'builtin-dy')  platW = 0;
+    else if (r.resultSource === 'builtin-gen') platW = 1; // 通用规则次之
+    // 风险权重
+    const sevW = r.severity === 'high' ? 0 : 1;
+    return platW * 10 + sevW;
+  }
+
+  return results.sort((a,b) => sortWeight(a) - sortWeight(b));
 }
 
-// ── 计算提示等级 ──────────────────────────────────────────
-// 低：0 条；或 ≤2 条且无 high
-// 中：有 high 或 total 3-4 条
-// 高：high ≥ 3 条 或 total ≥ 5 条
 function calcLevel(results) {
-  const total = results.length;
-  const highCount = results.filter(r => r.severity === 'high').length;
-
-  if (total === 0) return 'low';
-  if (highCount >= 3 || total >= 5) return 'high';
-  if (highCount >= 1 || total >= 3) return 'mid';
+  const t = results.length, h = results.filter(r=>r.severity==='high').length;
+  if (t===0) return 'low';
+  if (h>=3||t>=5) return 'high';
+  if (h>=1||t>=3) return 'mid';
   return 'low';
 }
 
-// ── 渲染总览卡片 ──────────────────────────────────────────
-function renderOverview(results) {
-  const total = results.length;
-  const highCount = results.filter(r => r.severity === 'high').length;
-  const level = calcLevel(results);
-
-  const levelMap = {
-    low:  { label: '提示等级：低', cls: 'level-low' },
-    mid:  { label: '提示等级：中', cls: 'level-mid' },
-    high: { label: '提示等级：高', cls: 'level-high' },
-  };
-  const lv = levelMap[level];
-
-  if (total === 0) {
-    overviewCard.innerHTML = `
-      <div class="empty-state">
-        <div class="empty-icon">✓</div>
-        <div class="empty-title">未发现明显值得调整的表达</div>
-        <div class="empty-desc">当前文案整体表达较为平稳，仍建议结合实际情况人工复核。</div>
-      </div>`;
-  } else {
-    overviewCard.innerHTML = `
-      <div class="overview-top">
-        <div class="overview-stats">
-          <div class="overview-main">共发现 ${total} 处值得调整的表达</div>
-          <div class="overview-sub">其中 ${highCount} 处为较高风险提示，建议优先修改</div>
-        </div>
-        <div class="level-badge ${lv.cls}">${lv.label}</div>
-      </div>`;
-  }
+// source label helpers
+function srcLabel(src) {
+  const m = {'builtin-xhs':'参考小红书规范','builtin-dy':'参考抖音规范','builtin-gen':'通用规则','custom':'自定义','lib':'词库命中'};
+  return m[src] || src;
+}
+function srcTagCls(src) {
+  const m = {'builtin-xhs':'xhs','builtin-dy':'dy','lib':'lib'};
+  return m[src] || '';
+}
+function ruleTagCls(src) {
+  const m = {'builtin-xhs':'builtin-xhs','builtin-dy':'builtin-dy','builtin-gen':'builtin-gen','custom':'custom'};
+  return m[src] || 'builtin-gen';
+}
+function ruleTagLabel(src) {
+  const m = {'builtin-xhs':'小红书规范','builtin-dy':'抖音规范','builtin-gen':'通用内置','custom':'自定义'};
+  return m[src] || '内置';
 }
 
-// ── 渲染问题列表 ──────────────────────────────────────────
+// ═══════════════════════════════════════════════════════════
+// 渲染：自查结果
+// ═══════════════════════════════════════════════════════════
+const overviewCardEl = document.getElementById('overview-card');
+const issueListEl    = document.getElementById('issue-list');
+const resultSection  = document.getElementById('result-section');
+
+function renderOverview(results, platform) {
+  const t = results.length, h = results.filter(r=>r.severity==='high').length;
+  const lv = calcLevel(results);
+  const lvMap = {low:['提示等级：低','level-low'],mid:['提示等级：中','level-mid'],high:['提示等级：高','level-high']};
+  const [ll,lc] = lvMap[lv];
+
+  // 平台提示条
+  const bar = document.getElementById('platform-result-bar');
+  const platInfo = {
+    all: ['bar-all', '全平台通用模式 · 通用 + 小红书 + 抖音规范均已检测'],
+    xhs: ['bar-xhs', '小红书模式 · 小红书规范优先展示，通用规则同步检测'],
+    dy:  ['bar-dy',  '抖音模式 · 抖音规范优先展示，通用规则同步检测'],
+  };
+  bar.className = 'platform-result-bar ' + platInfo[platform][0];
+  bar.textContent = platInfo[platform][1];
+
+  overviewCardEl.innerHTML = t===0
+    ? `<div class="empty-state"><div class="empty-icon">✓</div><div class="empty-title">未发现明显值得调整的表达</div><div class="empty-desc">当前文案整体表达较为平稳，仍建议结合实际情况人工复核。</div></div>`
+    : `<div class="overview-top"><div><div class="overview-main">共发现 ${t} 处值得调整的表达</div><div class="overview-sub">其中 ${h} 处为较高风险提示，建议优先修改</div></div><div class="level-badge ${lc}">${ll}</div></div>`;
+}
+
 function renderIssues(results) {
-  issueList.innerHTML = '';
-
-  if (results.length === 0) return;
-
-  results.forEach((r, i) => {
-    const severityLabel = r.severity === 'high' ? '较高风险提示' : '中等风险提示';
-    const severityCls   = r.severity === 'high' ? 'severity-high' : 'severity-medium';
-    const highlighted   = highlightKeyword(r.sentence, r.matchedKeyword);
-
-    const suggestionsHTML = r.suggestions
-      .map(s => `<div class="suggestion-item"><div class="suggestion-dot"></div><div>${s}</div></div>`)
-      .join('');
-
+  issueListEl.innerHTML = '';
+  results.forEach((r,i) => {
+    const sl = r.severity==='high'?'较高风险提示':'中等风险提示';
+    const sc = r.severity==='high'?'sev-high':'sev-med';
+    const hl = hlKw(escH(r.sentence), escH(r.matchedKeyword));
+    const sugsHTML = r.suggestions.length
+      ? r.suggestions.map(s=>`<div class="sug-item"><div class="sug-dot"></div><div>${escH(s)}</div></div>`).join('')
+      : `<div class="sug-item"><div class="sug-dot"></div><div>请结合词库说明自行判断是否调整。</div></div>`;
+    const srcC = srcTagCls(r.resultSource);
+    const srcL = srcLabel(r.resultSource);
     const card = document.createElement('div');
     card.className = 'issue-card';
     card.innerHTML = `
-      <div class="issue-card-header">
-        <span class="issue-index">#${String(i + 1).padStart(2, '0')}</span>
-        <span class="issue-category">${r.category}</span>
-        <span class="severity-tag ${severityCls}">${severityLabel}</span>
+      <div class="issue-card-hdr">
+        <span class="issue-idx">#${String(i+1).padStart(2,'0')}</span>
+        <span class="issue-cat">${escH(r.category)}</span>
+        <span class="issue-source ${srcC}">${srcL}</span>
+        <span class="sev-tag ${sc}">${sl}</span>
       </div>
       <div class="issue-card-body">
-        <div>
-          <div class="issue-field-label" style="margin-bottom:6px;">原句（命中词已高亮）</div>
-          <div class="issue-sentence-block">${highlighted}</div>
-        </div>
-        <div class="issue-field">
-          <div class="issue-field-label">风险说明</div>
-          <div class="issue-field-value">${r.message}</div>
-        </div>
-        <div class="issue-field">
-          <div class="issue-field-label">改写建议</div>
-          <div class="suggestions-list">${suggestionsHTML}</div>
-        </div>
+        <div><div class="ifield-lbl" style="margin-bottom:5px">原句（命中词已高亮）</div><div class="issue-sent">${hl}</div></div>
+        <div class="ifield"><div class="ifield-lbl">风险说明</div><div class="ifield-val">${escH(r.message)}</div></div>
+        <div class="ifield"><div class="ifield-lbl">改写建议</div><div class="sug-list">${sugsHTML}</div></div>
       </div>`;
-    issueList.appendChild(card);
+    issueListEl.appendChild(card);
   });
 }
 
-// ── 按钮事件：开始自查 ────────────────────────────────────
-btnCheck.addEventListener('click', () => {
-  const title = titleInput.value.trim();
-  const body  = bodyInput.value.trim();
+// ═══════════════════════════════════════════════════════════
+// 渲染：规则列表
+// ═══════════════════════════════════════════════════════════
+function renderRuleList() {
+  const rules = loadRules();
+  const custom = rules.filter(r=>r.source==='custom').length;
+  document.getElementById('badge-rules').textContent = rules.length;
+  document.getElementById('rules-stats').innerHTML =
+    `共 <strong>${rules.length}</strong> 条规则 · 通用内置 <strong>${rules.filter(r=>r.source==='builtin-gen').length}</strong> · 小红书 <strong>${rules.filter(r=>r.source==='builtin-xhs').length}</strong> · 抖音 <strong>${rules.filter(r=>r.source==='builtin-dy').length}</strong> · 自定义 <strong>${custom}</strong>`;
+  const el = document.getElementById('rule-items');
+  el.innerHTML = '';
+  rules.forEach(rule => {
+    const sc  = ruleTagCls(rule.source);
+    const sl  = ruleTagLabel(rule.source);
+    const sevc = rule.severity==='high'?'sev-high':'sev-med';
+    const sevl = rule.severity==='high'?'较高风险':'中等风险';
+    const chips = rule.keywords.map(k=>`<span class="kchip">${escH(k)}</span>`).join('');
+    const sugs  = rule.suggestions.map((s,i)=>`${i+1}. ${escH(s)}`).join('<br>');
+    const item = document.createElement('div');
+    item.className = 'rule-item';
+    item.dataset.id = rule.id;
+    item.innerHTML = `
+      <div class="rule-item-hdr">
+        <span class="ri-toggle">▶</span>
+        <span class="ri-name">${escH(rule.category)}</span>
+        <div class="ri-meta">
+          <span class="sev-tag ${sevc}" style="font-size:10.5px">${sevl}</span>
+          <span class="src-tag ${sc}">${sl}</span>
+        </div>
+        <div class="ri-actions">
+          <button class="btn btn-ghost btn-sm" data-action="edit" data-id="${escH(rule.id)}">编辑</button>
+          <button class="btn btn-danger btn-sm" data-action="delete" data-id="${escH(rule.id)}">删除</button>
+        </div>
+      </div>
+      <div class="rule-item-body">
+        <div class="rd-grid">
+          <div class="rd-field"><div class="rd-lbl">触发词（${rule.keywords.length} 个）</div><div class="kchips">${chips}</div></div>
+          <div class="rd-field"><div class="rd-lbl">风险说明</div><div class="rd-val">${escH(rule.message)}</div></div>
+        </div>
+        <div class="rd-field"><div class="rd-lbl">改写建议</div><div class="rd-val">${sugs||'—'}</div></div>
+      </div>`;
+    item.querySelector('.rule-item-hdr').addEventListener('click', e => {
+      if (e.target.closest('.ri-actions')) return;
+      item.classList.toggle('open');
+    });
+    el.appendChild(item);
+  });
+}
 
-  // 空内容校验
-  if (!title && !body) {
-    emptyToast.classList.add('show');
-    setTimeout(() => emptyToast.classList.remove('show'), 3000);
+document.getElementById('rule-items').addEventListener('click', e => {
+  const btn = e.target.closest('[data-action]');
+  if (!btn) return;
+  const rule = loadRules().find(r=>r.id===btn.dataset.id);
+  if (!rule) return;
+  if (btn.dataset.action==='edit')   openRuleModal(rule);
+  if (btn.dataset.action==='delete') openConfirm(`删除规则「${rule.category}」后无法恢复。`, ()=>{
+    saveRules(loadRules().filter(r=>r.id!==rule.id)); renderRuleList();
+  });
+});
+
+// ── rule modal ──
+let editRuleId = null;
+const ruleModal = document.getElementById('rule-modal');
+function openRuleModal(rule) {
+  editRuleId = rule ? rule.id : null;
+  document.getElementById('rule-modal-title').textContent = rule ? '编辑规则' : '新增规则';
+  document.getElementById('f-cat').value  = rule ? rule.category : '';
+  document.getElementById('f-sev').value  = rule ? rule.severity : 'high';
+  document.getElementById('f-kw').value   = rule ? rule.keywords.join('，') : '';
+  document.getElementById('f-msg').value  = rule ? rule.message : '';
+  document.getElementById('f-sug').value  = rule ? rule.suggestions.join('\n') : '';
+  ruleModal.classList.add('show');
+  setTimeout(()=>document.getElementById('f-cat').focus(), 50);
+}
+function closeRuleModal() { ruleModal.classList.remove('show'); editRuleId = null; }
+document.getElementById('rmc').addEventListener('click', closeRuleModal);
+document.getElementById('rmc2').addEventListener('click', closeRuleModal);
+ruleModal.addEventListener('click', e=>{ if(e.target===ruleModal) closeRuleModal(); });
+document.getElementById('rms').addEventListener('click', () => {
+  const cat = document.getElementById('f-cat').value.trim();
+  const sev = document.getElementById('f-sev').value;
+  const kwr = document.getElementById('f-kw').value.trim();
+  const msg = document.getElementById('f-msg').value.trim();
+  const sgr = document.getElementById('f-sug').value.trim();
+  if (!cat) { alert('请填写规则类别名称'); return; }
+  if (!kwr) { alert('请至少填写一个触发词'); return; }
+  if (!msg) { alert('请填写风险说明'); return; }
+  if (!sgr) { alert('请至少填写一条改写建议'); return; }
+  const kws = kwr.split(/[,，]+/).map(k=>k.trim()).filter(Boolean);
+  const sgs = sgr.split('\n').map(s=>s.trim()).filter(Boolean);
+  const rules = loadRules();
+  if (editRuleId) {
+    const idx = rules.findIndex(r=>r.id===editRuleId);
+    if (idx!==-1) rules[idx] = {...rules[idx], category:cat, severity:sev, keywords:kws, message:msg, suggestions:sgs};
+  } else {
+    rules.push({id:genId(), category:cat, severity:sev, keywords:kws, message:msg, suggestions:sgs, source:'custom'});
+  }
+  saveRules(rules); closeRuleModal(); renderRuleList();
+});
+document.getElementById('btn-add-rule').addEventListener('click', ()=>openRuleModal(null));
+
+// ═══════════════════════════════════════════════════════════
+// 渲染：词库列表
+// ═══════════════════════════════════════════════════════════
+function renderLibList() {
+  const libs = loadLibs();
+  const totalWords = libs.reduce((s,l)=>s+(l.words||[]).length, 0);
+  document.getElementById('badge-lib').textContent = libs.length;
+  document.getElementById('lib-stats').innerHTML =
+    `共 <strong>${libs.length}</strong> 个词库 · 合计 <strong>${totalWords}</strong> 个词`;
+  const el = document.getElementById('lib-items');
+  el.innerHTML = '';
+  if (libs.length===0) {
+    el.innerHTML = `<div style="text-align:center;padding:40px 20px;color:var(--text-tertiary);font-size:13.5px">还没有词库，点击右上角「新建词库」开始添加</div>`;
     return;
   }
+  libs.forEach(lib => {
+    const sevc = lib.severity==='high'?'sev-high':'sev-med';
+    const sevl = lib.severity==='high'?'较高风险':'中等风险';
+    const words = lib.words || [];
+    const chips = words.slice(0,30).map(w=>`<span class="kchip">${escH(w)}</span>`).join('');
+    const more  = words.length>30 ? `<span class="kchip" style="color:var(--text-tertiary)">+${words.length-30} 个</span>` : '';
+    const item  = document.createElement('div');
+    item.className = 'lib-item';
+    item.dataset.id = lib.id;
+    item.innerHTML = `
+      <div class="lib-item-hdr">
+        <span class="ri-toggle">▶</span>
+        <span class="lib-name">${escH(lib.name)}</span>
+        <span class="sev-tag ${sevc}" style="font-size:10.5px">${sevl}</span>
+        <span class="lib-count">${words.length} 个词</span>
+        <div class="ri-actions">
+          <button class="btn btn-ghost btn-sm" data-action="edit-lib" data-id="${escH(lib.id)}">编辑信息</button>
+          <button class="btn btn-ghost btn-sm" data-action="import-lib" data-id="${escH(lib.id)}">批量导入</button>
+          <button class="btn btn-danger btn-sm" data-action="delete-lib" data-id="${escH(lib.id)}">删除</button>
+        </div>
+      </div>
+      <div class="lib-item-body">
+        <div class="lib-desc-text">说明：${escH(lib.description||'（未填写说明）')}</div>
+        <div class="rd-lbl" style="margin-bottom:7px">词列表（${words.length} 个）</div>
+        <div class="kchips" style="margin-bottom:12px">${chips}${more}</div>
+        <div class="lib-add-row">
+          <input type="text" class="lib-quick-add" placeholder="快速加词，回车确认" data-id="${escH(lib.id)}">
+          <button class="btn btn-ghost btn-sm lib-quick-btn" data-id="${escH(lib.id)}">添加</button>
+        </div>
+      </div>`;
+    item.querySelector('.lib-item-hdr').addEventListener('click', e => {
+      if (e.target.closest('.ri-actions')) return;
+      item.classList.toggle('open');
+    });
+    // 快速加词：回车
+    const qaInput = item.querySelector('.lib-quick-add');
+    const qaBtn   = item.querySelector('.lib-quick-btn');
+    const doQuickAdd = () => {
+      const val = qaInput.value.trim();
+      if (!val) return;
+      const libs2 = loadLibs();
+      const l = libs2.find(x=>x.id===lib.id);
+      if (!l) return;
+      const newWords = val.split(/[,，\n]+/).map(w=>w.trim()).filter(Boolean);
+      l.words = [...new Set([...(l.words||[]), ...newWords])];
+      saveLibs(libs2); qaInput.value=''; renderLibList();
+      // 重新展开这个词库
+      setTimeout(()=>{
+        const reItem = document.querySelector(`.lib-item[data-id="${lib.id}"]`);
+        if (reItem) reItem.classList.add('open');
+      }, 50);
+    };
+    qaInput.addEventListener('keydown', e=>{ if(e.key==='Enter'){ e.preventDefault(); doQuickAdd(); }});
+    qaBtn.addEventListener('click', doQuickAdd);
+    el.appendChild(item);
+  });
+}
 
-  emptyToast.classList.remove('show');
+document.getElementById('lib-items').addEventListener('click', e => {
+  const btn = e.target.closest('[data-action]');
+  if (!btn) return;
+  const libs = loadLibs();
+  const lib  = libs.find(l=>l.id===btn.dataset.id);
+  if (!lib) return;
+  if (btn.dataset.action==='edit-lib')   openLibEditModal(lib);
+  if (btn.dataset.action==='import-lib') openImportModal(lib.id);
+  if (btn.dataset.action==='delete-lib') openConfirm(
+    `删除词库「${lib.name}」（含 ${(lib.words||[]).length} 个词）后无法恢复。`,
+    ()=>{ saveLibs(loadLibs().filter(l=>l.id!==lib.id)); renderLibList(); }
+  );
+});
 
-  // 执行检测
-  const results = runCheck(title, body);
+// ── lib new modal ──
+let newLibModal = document.getElementById('lib-modal');
+function closeLibModal() { newLibModal.classList.remove('show'); }
+document.getElementById('lmc').addEventListener('click', closeLibModal);
+document.getElementById('lmc2').addEventListener('click', closeLibModal);
+newLibModal.addEventListener('click', e=>{ if(e.target===newLibModal) closeLibModal(); });
+document.getElementById('btn-add-lib').addEventListener('click', ()=>{
+  document.getElementById('l-name').value='';
+  document.getElementById('l-sev').value='medium';
+  document.getElementById('l-desc').value='';
+  document.getElementById('l-words').value='';
+  newLibModal.classList.add('show');
+  setTimeout(()=>document.getElementById('l-name').focus(),50);
+});
+document.getElementById('lms').addEventListener('click', ()=>{
+  const name = document.getElementById('l-name').value.trim();
+  const sev  = document.getElementById('l-sev').value;
+  const desc = document.getElementById('l-desc').value.trim();
+  const wraw = document.getElementById('l-words').value.trim();
+  if (!name) { alert('请填写词库名称'); return; }
+  if (!desc) { alert('请填写整体说明'); return; }
+  const words = wraw ? wraw.split(/[,，\n]+/).map(w=>w.trim()).filter(Boolean) : [];
+  const libs = loadLibs();
+  libs.push({id:genId(), name, severity:sev, description:desc, words:[...new Set(words)]});
+  saveLibs(libs); closeLibModal(); renderLibList();
+});
 
-  // 渲染结果
-  renderOverview(results);
-  renderIssues(results);
+// ── lib edit modal ──
+let editLibId = null;
+const libEditModal = document.getElementById('lib-edit-modal');
+function openLibEditModal(lib) {
+  editLibId = lib.id;
+  document.getElementById('le-name').value = lib.name;
+  document.getElementById('le-sev').value  = lib.severity;
+  document.getElementById('le-desc').value = lib.description||'';
+  libEditModal.classList.add('show');
+}
+function closeLibEditModal() { libEditModal.classList.remove('show'); editLibId=null; }
+document.getElementById('lemc').addEventListener('click', closeLibEditModal);
+document.getElementById('lemc2').addEventListener('click', closeLibEditModal);
+libEditModal.addEventListener('click', e=>{ if(e.target===libEditModal) closeLibEditModal(); });
+document.getElementById('lems').addEventListener('click', ()=>{
+  const name = document.getElementById('le-name').value.trim();
+  const sev  = document.getElementById('le-sev').value;
+  const desc = document.getElementById('le-desc').value.trim();
+  if (!name) { alert('请填写词库名称'); return; }
+  if (!desc) { alert('请填写整体说明'); return; }
+  const libs = loadLibs();
+  const l = libs.find(x=>x.id===editLibId);
+  if (l) { l.name=name; l.severity=sev; l.description=desc; }
+  saveLibs(libs); closeLibEditModal(); renderLibList();
+});
 
-  // 显示结果区
+// ── import modal ──
+let importLibId = null;
+const importModal = document.getElementById('import-modal');
+function openImportModal(libId) { importLibId=libId; document.getElementById('i-words').value=''; importModal.classList.add('show'); }
+function closeImportModal() { importModal.classList.remove('show'); importLibId=null; }
+document.getElementById('imc').addEventListener('click', closeImportModal);
+document.getElementById('imc2').addEventListener('click', closeImportModal);
+importModal.addEventListener('click', e=>{ if(e.target===importModal) closeImportModal(); });
+document.getElementById('ims').addEventListener('click', ()=>{
+  const raw = document.getElementById('i-words').value.trim();
+  if (!raw) { alert('请先粘贴词列表'); return; }
+  const newWords = raw.split(/[,，\n]+/).map(w=>w.trim()).filter(Boolean);
+  const libs = loadLibs();
+  const l = libs.find(x=>x.id===importLibId);
+  if (l) l.words = [...new Set([...(l.words||[]), ...newWords])];
+  saveLibs(libs); closeImportModal(); renderLibList();
+});
+
+// ═══════════════════════════════════════════════════════════
+// 通用确认弹窗
+// ═══════════════════════════════════════════════════════════
+let confirmCb = null;
+const confirmModal = document.getElementById('confirm-modal');
+function openConfirm(desc, cb) {
+  document.getElementById('conf-desc').textContent = desc;
+  confirmCb = cb;
+  confirmModal.classList.add('show');
+}
+function closeConfirm() { confirmModal.classList.remove('show'); confirmCb=null; }
+document.getElementById('conf-cancel').addEventListener('click', closeConfirm);
+confirmModal.addEventListener('click', e=>{ if(e.target===confirmModal) closeConfirm(); });
+document.getElementById('conf-ok').addEventListener('click', ()=>{ if(confirmCb) confirmCb(); closeConfirm(); });
+
+// ═══════════════════════════════════════════════════════════
+// 标签页切换
+// ═══════════════════════════════════════════════════════════
+document.querySelectorAll('.nav-tab').forEach(tab => {
+  tab.addEventListener('click', ()=>{
+    document.querySelectorAll('.nav-tab').forEach(t=>t.classList.remove('active'));
+    document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+    tab.classList.add('active');
+    document.getElementById('page-'+tab.dataset.tab).classList.add('active');
+    if (tab.dataset.tab==='rules') renderRuleList();
+    if (tab.dataset.tab==='lib')   renderLibList();
+  });
+});
+
+// ═══════════════════════════════════════════════════════════
+// 自查页：平台选择器
+// ═══════════════════════════════════════════════════════════
+let currentPlatform = 'all';
+
+const platHints = {
+  all: '当前模式：检测全部规则，通用 + 小红书 + 抖音规范均生效。',
+  xhs: '当前模式：小红书优先 — 小红书规范类问题优先展示，其余规则同步检测。',
+  dy:  '当前模式：抖音优先 — 抖音规范类问题优先展示，其余规则同步检测。',
+};
+
+document.querySelectorAll('.plat-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    currentPlatform = btn.dataset.plat;
+    // 清除所有激活态
+    document.querySelectorAll('.plat-btn').forEach(b => {
+      b.classList.remove('active-all','active-xhs','active-dy');
+    });
+    // 激活当前
+    const clsMap = {all:'active-all', xhs:'active-xhs', dy:'active-dy'};
+    btn.classList.add(clsMap[currentPlatform]);
+    // 更新提示文字
+    document.getElementById('plat-hint').textContent = platHints[currentPlatform];
+    // 如果已有结果则重新检测
+    if (resultSection.classList.contains('show')) {
+      const t = titleInput.value.trim(), b = bodyInput.value.trim();
+      if (t||b) {
+        const res = runCheck(t, b, currentPlatform);
+        renderOverview(res, currentPlatform);
+        renderIssues(res);
+      }
+    }
+  });
+});
+
+// ═══════════════════════════════════════════════════════════
+// 自查页：输入与按钮
+// ═══════════════════════════════════════════════════════════
+const titleInput = document.getElementById('title-input');
+const bodyInput  = document.getElementById('body-input');
+
+titleInput.addEventListener('input', ()=>{ document.getElementById('title-count').textContent = titleInput.value.length+' 字'; });
+bodyInput.addEventListener('input',  ()=>{ document.getElementById('body-count').textContent  = bodyInput.value.length +' 字'; });
+
+const EXAMPLE_TITLE = '史上最强减脂方法，第一名推荐，一周必见效！';
+const EXAMPLE_BODY  = `经科学证实这是市面上最好用的方案，保证有效，稳过所有瓶颈期！男人都是这样，毫无疑问，这就是事实。闭眼冲，错过血亏，人人必备，赶紧买！七天祛痘百分百成功，不关注你会后悔的。`;
+
+document.getElementById('btn-check').addEventListener('click', ()=>{
+  const t = titleInput.value.trim(), b = bodyInput.value.trim();
+  const toast = document.getElementById('empty-toast');
+  if (!t&&!b) { toast.classList.add('show'); setTimeout(()=>toast.classList.remove('show'),3000); return; }
+  toast.classList.remove('show');
+  const res = runCheck(t, b, currentPlatform);
+  renderOverview(res, currentPlatform); renderIssues(res);
   resultSection.classList.add('show');
-
-  // 滚动到结果区
-  setTimeout(() => {
-    resultSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
-  }, 50);
+  setTimeout(()=>resultSection.scrollIntoView({behavior:'smooth',block:'start'}),50);
 });
 
-// ── 按钮事件：清空内容 ────────────────────────────────────
-btnClear.addEventListener('click', () => {
-  titleInput.value = '';
-  bodyInput.value  = '';
-  titleCount.textContent = '0 字';
-  bodyCount.textContent  = '0 字';
-  emptyToast.classList.remove('show');
+document.getElementById('btn-clear').addEventListener('click', ()=>{
+  titleInput.value=''; bodyInput.value='';
+  document.getElementById('title-count').textContent='0 字';
+  document.getElementById('body-count').textContent='0 字';
+  document.getElementById('empty-toast').classList.remove('show');
   resultSection.classList.remove('show');
-  overviewCard.innerHTML = '';
-  issueList.innerHTML    = '';
+  overviewCardEl.innerHTML=''; issueListEl.innerHTML='';
 });
 
-// ── 按钮事件：加载示例 ────────────────────────────────────
-btnExample.addEventListener('click', () => {
-  titleInput.value = EXAMPLE_TITLE;
-  bodyInput.value  = EXAMPLE_BODY;
-  titleCount.textContent = EXAMPLE_TITLE.length + ' 字';
-  bodyCount.textContent  = EXAMPLE_BODY.length  + ' 字';
-  emptyToast.classList.remove('show');
-  // 隐藏旧结果（如有）
+document.getElementById('btn-example').addEventListener('click', ()=>{
+  titleInput.value=EXAMPLE_TITLE; bodyInput.value=EXAMPLE_BODY;
+  document.getElementById('title-count').textContent=EXAMPLE_TITLE.length+' 字';
+  document.getElementById('body-count').textContent=EXAMPLE_BODY.length+' 字';
   resultSection.classList.remove('show');
 });
+
+// ═══════════════════════════════════════════════════════════
+// 初始化
+// ═══════════════════════════════════════════════════════════
+initStorage();
+renderRuleList();
+renderLibList();
 </script>
 </body>
 </html>
